@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" type="text/css" href="css/init_styles.css">
+    <link rel="stylesheet" type="text/css" href="js/dojo-release-1.14.2/dojo/resources/dojo.css">
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dijit/themes/tundra/tundra.css">
+    <meta charset="UTF-8">
+    <title>Add An Expense Event</title>
+</head>
+<body class="tundra">
+    
+    <div id="mainMenu" data-dojo-type="dijit/MenuBar"></div>
+    <p></p>
+
+    <p class="commonBoldTextFormat">Add An Expense Event</p>
+    
+    <div class="formFrame">
+        <form action="updateExpense" class="formFormat">
+            <fieldset>
+                <input type="hidden" name="expenseId" th:value="${expense.expenseId}" />
+                Projected Date: <input type="date" name="projectedDate" th:value="${#dates.format(expense.projectedDate, 'yyyy-MM-dd')}"/><br>
+                Projected Amount: <input type="number" name="projectedAmount" step="any" th:value="${expense.projectedAmount}"/><br>
+                Actual Date: <input type="date" name="actualDate" th:value="${#dates.format(expense.actualDate, 'yyyy-MM-dd')}"/><br>
+                Actual Amount: <input type="number" name="actualAmount" step="any" th:value="${expense.actualAmount}"/><br>
+                Expense Type: <select name="expenseType">
+                    <option value=""></option>
+                    <option th:selected="${expense.expenseType} == 'Mortgage'" value="Mortgage">Mortgage</option>
+                    <option th:selected="${expense.expenseType} == 'Baseline'" value="Baseline">Baseline</option>
+                    <option th:selected="${expense.expenseType} == 'Extraordinary'" value="Extraordinary">Extraordinary</option>
+                    <option th:selected="${expense.expenseType} == 'Unplanned'" value="Unplanned">Unplanned</option>
+                </select><br>
+                <input type="submit" value="Submit" />
+            </fieldset>
+        </form>
+    </div>
+    
+    <!-- load Dojo -->
+   <script src="js/dojo-release-1.14.2/dojo/dojo.js"></script>
+    
+   <script>require(["js/menu.js"], function(applyMenu){});</script>
+
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" type="text/css" href="css/init_styles.css">
+    <link rel="stylesheet" type="text/css" href="js/dojo-release-1.14.2/dojo/resources/dojo.css">
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dijit/themes/tundra/tundra.css">
+    <meta charset="UTF-8">
+    <title>Add An Expense Event</title>
+</head>
+<body class="tundra">
+    
+    <div id="mainMenu" data-dojo-type="dijit/MenuBar"></div>
+    <p></p>
+
+    <p class="commonBoldTextFormat">Add An Expense Event</p>
+    
+    <div class="formFrame">
+        <form action="addExpense" class="formFormat">
+            <fieldset>
+                Projected Date: <input type="date" name="projectedDate"/><br>
+                Projected Amount: <input type="number" name="projectedAmount" step="any" /><br>
+                Actual Date: <input type="date" name="actualDate" /><br>
+                Actual Amount: <input type="number" name="actualAmount" step="any" /><br>
+                Expense Type: <select name="expenseType">
+                    <option value=""></option>
+                    <option value="Mortgage">Mortgage</option>
+                    <option value="Baseline">Baseline</option>
+                    <option value="Extraordinary">Extraordinary</option>
+                    <option value="Unplanned">Mom's Retirement</option>
+                </select><br>
+                <input type="submit" value="Submit" />
+            </fieldset>
+        </form>
+    </div>
+    
+    <p></p>
+
+    <p class="commonBoldTextFormat">Expenses</p>
+    
+    <table class="commonTableFormat">
+        <tr>
+            <th>Projected Date</th>
+            <th>Projected Amount</th>
+            <th>Actual Date</th>
+            <th>Actual Amount</th>
+            <th>Expense Type</th>
+        </tr>
+        <tr th:each="expense : ${expenses}">
+            <td><a href="editExpense" th:href="@{/editExpense(expenseId=${expense.expenseId})}"><span th:text="${#dates.format(expense.projectedDate, 'MM/dd/yyyy')}"></span></a></td>
+            <td th:text="${expense.projectedAmount}" />
+            <td th:text="${#dates.format(expense.actualDate, 'MM/dd/yyyy')}"></td>
+            <td th:text="${expense.actualAmount != null}? ${expense.actualAmount} : ''"></td>
+            <td th:text="${expense.expenseType}"></td>
+        </tr>
+    </table>
+    
+    <!-- load Dojo -->
+   <script src="js/dojo-release-1.14.2/dojo/dojo.js"></script>
+    
+   <script>require(["js/menu.js"], function(applyMenu){});</script>
+
+</body>
+</html>

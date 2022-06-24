@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" type="text/css" href="css/init_styles.css">
+    <link rel="stylesheet" type="text/css" href="js/dojo-release-1.14.2/dojo/resources/dojo.css">
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dijit/themes/tundra/tundra.css">
+    <meta charset="UTF-8">
+    <title>Add An Income Event</title>
+</head>
+<body>
+<body class="tundra">
+    
+    <div id="mainMenu" data-dojo-type="dijit/MenuBar"></div>
+    <p></p>
+
+    <p class="commonBoldTextFormat">Add An Income Event</p>
+    
+    <div class="formFrame">
+        <form action="addIncomeEvent" class="formFormat">
+            <fieldset>
+                Projected Receive Date: <input type="date" name="projectedReceiveDate"/><br>
+                Projected Amount: <input type="number" name="projectedAmount" step="any" /><br>
+                Actual Receive Date: <input type="date" name="actualReceiveDate" /><br>
+                Actual Amount: <input type="number" name="actualAmount" step="any" /><br>
+                Source: <select name="source">
+                    <option value=""></option>
+                    <option value="AIG Severance">LFG Severance</option>
+                    <option value="Beth's Income">Beth's Income</option>
+                    <option value="Mom's Retirement">Mom's Retirement</option>
+                </select>
+                <input type="submit" value="Submit" />
+            </fieldset>
+        </form>
+    </div>
+    
+    <p></p>
+
+    <p class="commonBoldTextFormat">Income Events</p>
+    
+    <table class="commonTableFormat">
+        <tr>
+            <th>Projected Receive Date</th>
+            <th>Projected Amount</th>
+            <th>Actual Receive Date</th>
+            <th>Actual Amount</th>
+            <th>Source</th>
+        </tr>
+        <tr th:each="income : ${incomes}">
+            <td><a href="editIncome" th:href="@{/editIncome(incomeId=${income.incomeId})}"><span th:text="${#dates.format(income.projectedReceiveDate, 'MM/dd/yyyy')}"></span></a></td>
+            <td th:text="${income.projectedAmount}" />
+            <td th:text="${#dates.format(income.actualReceiveDate, 'MM/dd/yyyy')}"></td>
+            <td th:text="${income.actualAmount != null}? ${income.actualAmount} : ''"></td>
+            <td th:text="${income.source}"></td>
+        </tr>
+    </table>
+    
+    <!-- load Dojo -->
+   <script src="js/dojo-release-1.14.2/dojo/dojo.js"></script>
+    
+   <script>require(["js/menu.js"], function(applyMenu){});</script>
+
+</body>
+</html>

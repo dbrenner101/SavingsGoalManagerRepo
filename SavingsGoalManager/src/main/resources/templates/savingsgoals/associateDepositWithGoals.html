@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" type="text/css" href="css/init_styles.css">
+    <link rel="stylesheet" type="text/css" href="js/dojo-themes/dojo.css">
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dijit/themes/tundra/tundra.css">
+    <script src="//ajax.googleapis.com/ajax/libs/dojo/1.14.1/dojo/dojo.js"></script>
+    <meta charset="UTF-8">
+    <title>Add A New Savings Goal</title>
+</head>
+<body class="tundra">
+
+<script src="js/jquery-3.3.1.min.js"></script>
+
+    <div id="mainMenu" data-dojo-type="dijit/MenuBar"></div>
+    <p></p>
+
+    <p class="commonBoldTextFormat">Associate Deposit With Goals</p>
+
+    <p></p>
+
+    <p class="commonBoldTextFormat">Deposits</p>
+
+    <table class="commonTableFormat">
+        <tr>
+            <th>Deposit Date</th>
+            <th>Amount</th>
+            <th>Auto Apply Weekly Target</th>
+        </tr>
+        <tr>
+            <td><span th:text="${#dates.format(deposit.date, 'MM/dd/yyyy')}"></span></td>
+            <td id="depositAmount" th:text="${deposit.amount}" />
+            <td align="center"><input type="button" id="applyWeeklyBtn" value="Apply" onClick="applyWeeklyAmounts()"/></td>
+        </tr>
+    </table>
+
+    <p></p>
+
+    <p class="commonBoldTextFormat">Savings Goals</p>
+
+    <table class="commonTableFormat">
+        <tr>
+            <th>Id</th>
+            <th>Savings Goal</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Target Amount</th>
+            <th>Months</th>
+            <th>Savings Per Month</th>
+            <th>Weeks</th>
+            <th>Savings Per Week</th>
+            <th>Current Balance</th>
+            <th>Allocate to Goal</th>
+        </tr>
+        <form action="allocateDeposit" name="savingsAllocation">
+	        <input type="hidden" name="depositId" th:value="${deposit.depositId}">
+	        <tr th:each="savingsGoal : ${savingsGoals}">
+                <input type="hidden" name="savingsPerWeek" th:value="${savingsGoal.savingsPerWeek}"/>
+	            <td><span id="savingsGoalId" th:text="${savingsGoal.savingsGoalId}"></span></td>
+	            <td><a href="editSavingsGoal" th:href="@{/editSavingsGoal(savingsGoalId=${savingsGoal.savingsGoalId})}"><span th:text="${savingsGoal.goalName}"></span></a></td>
+	            <td th:text="${#dates.format(savingsGoal.savingsStartDate, 'MM/dd/yyyy')}"></td>
+	            <td th:text="${#dates.format(savingsGoal.savingsEndDate, 'MM/dd/yyyy')}"></td>
+	            <td th:text="${savingsGoal.targetAmount}"></td>
+	            <td th:text="${savingsGoal.monthsTillPayment}"></td>
+	            <td th:text="${#numbers.formatCurrency(savingsGoal.savingsPerMonth)}"></td>
+	            <td th:text="${savingsGoal.weeksTillPayment}"></td>
+	            <td th:text="${#numbers.formatCurrency(savingsGoal.savingsPerWeek)}"></td>
+	            <td th:text="${#numbers.formatCurrency(savingsGoal.currentBalance)}"></td>
+	            <td>
+	                <input type="hidden" name="savingsGoalId" th:value="${savingsGoal.savingsGoalId}">
+	                <input type="number" min="0" step=".01" name="amountTowardsGoal" onChange="updateUnplannedAmount();">
+	            </td>
+	        </tr>
+	        <tr>
+	            <td colspan="10"></td>
+	            <td align="right" ><input type="submit" id="appyAmountTowardsGoal"></td>
+	        </tr>
+        </form>
+        <tr>
+            <td></td>
+            <td><span th:text="${unplannedGoal.goalName}"></span></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td th:text="${#numbers.formatCurrency(unplannedGoal.currentBalance)}"></td>
+            <td id="amountTowardsUnplannedGoal"></td>
+        </tr>
+    </table>
+
+   <script>require(["js/menu.js"], function(applyMenu){});</script>
+
+   <script>
+
+
+
+	    function updateUnplannedAmount() {
+
+	    	var totalAppliedAmount = 0;
+	    	var depositAmount = parseFloat($("#depositAmount").html());
+	        var nodes = document.getElementsByName("amountTowardsGoal");
+	        var initialBalanceNodes = document.getElementsByName("initialBalance");
+            for (let i=0; i<nodes.length; i++) {
+            	if (nodes[i].value != NaN && nodes[i].value.length > 0) {
+            	    totalAppliedAmount += parseFloat(nodes[i].value);
+            	}
+            }
+            var remainingDeposit = depositAmount - totalAppliedAmount;
+            $("#amountTowardsUnplannedGoal").html(remainingDeposit);
+	    }
+
+	    function applyWeeklyAmounts() {
+            var savingsPerWeek = $("input[name='savingsPerWeek']");
+            var applyAmountArray = $("input[name='amountTowardsGoal']");
+
+	    	const dollars = new Intl.NumberFormat(`en-US`, {
+	    	    currency: `USD`,
+	    	    style: 'currency',
+	    	});
+	    	
+	    	for (let i=0; i<savingsPerWeek.length; i++) {
+	    		let amount = new Number(savingsPerWeek[i].value);
+	    		applyAmountArray[i].value = amount.toFixed(2);
+	    	}
+	    	
+	    	updateUnplannedAmount()
+	    }
+
+	    /*function updateGoalBalance(goalId, amount) {
+	    	$.ajax({
+                url: "http://localhost:8080/savingsGoal/" + goalId,
+                data: {
+                    "amount": amount
+                },
+                type: "PUT",
+            })
+              .done(function( json ) {
+                 console.log("Updated");
+              })
+              .fail(function( xhr, status, errorThrown ) {
+                alert( "Sorry, there was a problem!" );
+                console.log( "Error: " + errorThrown );
+                console.log( "Status: " + status );
+                console.dir( xhr );
+              })
+	    }*/
+   </script>
+
+</body>
+</html>

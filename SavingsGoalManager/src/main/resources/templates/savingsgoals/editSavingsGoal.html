@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" type="text/css" href="css/init_styles.css">
+    <link rel="stylesheet" type="text/css" href="js/dojo-themes/dojo.css">
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dijit/themes/tundra/tundra.css">
+    <script src="//ajax.googleapis.com/ajax/libs/dojo/1.14.1/dojo/dojo.js"></script>
+    <meta charset="UTF-8">
+    <title>Add A New Savings Goal</title>
+</head>
+<body class="tundra">
+    
+    <div id="mainMenu" data-dojo-type="dijit/MenuBar"></div>
+    <p></p>
+
+    <p class="commonBoldTextFormat">Add A New Savings Goal</p>
+    
+    <div class="formFrame">
+        <form th:action="@{/updateSavingsGoal}" th:object="${savingsGoal}" class="formFormat">
+            <fieldset>
+                <input type="hidden" th:field="*{savingsGoalId}" th:value="${savingsGoal.savingsGoalId}" />
+                Name: <input type="text" required th:field="*{goalName}" th:value="${savingsGoal.goalName}" /><br>
+                Start date: <input type="date" required th:field="*{savingsStartDate}" th:value="${#dates.format(savingsGoal.savingsStartDate, 'yyyy-MM-dd')}" /><br>
+                End date: <input type="date" required th:field="*{savingsEndDate}" th:value="${#dates.format(savingsGoal.savingsEndDate, 'yyyy-MM-dd')}" /><br>
+                Target amount: <input type="number" required th:field="*{targetAmount}" step="any" th:value="${savingsGoal.targetAmount}" /><br>
+                Initial balance: <input type="number" th:field="*{initialBalance}" step="any" th:value="${savingsGoal.initialBalance}"/><br/>
+                Current balance: <input type="number" th:field="*{currentBalance}" step="any" th:value="${savingsGoal.currentBalance}"/><br/>
+                Notes: <textarea th:field="*{notes}" style="width:200px; height:200px" th:value="${savingsGoal.notes}"></textarea><br>
+                <input type="submit" value="Submit" />
+            </fieldset>
+        </form>
+    </div>
+    
+    <p></p>
+    
+   <script>require(["js/menu.js"], function(applyMenu){});</script>
+
+</body>
+</html>

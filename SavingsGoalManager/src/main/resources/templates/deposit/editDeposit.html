@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" type="text/css" href="css/init_styles.css">
+    <link rel="stylesheet" type="text/css" href="js/dojo-themes/dojo.css">
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dijit/themes/tundra/tundra.css">
+    <script src="//ajax.googleapis.com/ajax/libs/dojo/1.14.1/dojo/dojo.js"></script>
+    <meta charset="UTF-8">
+    <title>Edit Deposit Item</title>
+</head>
+<body class="tundra">
+    
+    <div id="mainMenu" data-dojo-type="dijit/MenuBar"></div>
+    <p></p>
+
+    <p class="commonBoldTextFormat">Edit Deposit</p>
+    
+    <div class="formFrame">
+        <form th:action="@{updateDeposit}" th:object="${deposit}" class="formFormat">
+            <fieldset>
+                <input type="hidden" name="depositId" th:value="${deposit.depositId}" />
+                Deposit Date: <input type="date" name="date" th:value="${#dates.format(deposit.date, 'yyyy-MM-dd')}"/><br>
+                Amount: <input type="number" name="amount" step="any" th:value="${deposit.amount}"/><br>
+                <input type="submit" value="Submit" />
+            </fieldset>
+        </form>
+    </div>
+    
+   <script>require(["js/menu.js"], function(applyMenu){});</script>
+
+</body>
+</html>

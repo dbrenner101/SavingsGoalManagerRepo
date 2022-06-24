@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" type="text/css" href="css/init_styles.css">
+    <link rel="stylesheet" type="text/css" href="js/dojo-themes/dojo.css">
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dijit/themes/tundra/tundra.css">
+    <script src="//ajax.googleapis.com/ajax/libs/dojo/1.14.1/dojo/dojo.js"></script>
+    <meta charset="UTF-8">
+    <title>Add A New Savings Goal</title>
+</head>
+<body class="tundra">
+    
+    <div id="mainMenu" data-dojo-type="dijit/MenuBar"></div>
+    <p></p>
+
+    <p class="commonBoldTextFormat">Add A Transaction</p>
+    
+    <div class="formFrame">
+        <form th:action="@{/addTransaction}" class="formFormat" th:object="${transaction}">
+            <fieldset>
+                Date: <input type="date" required id="date" th:field="*{date}" /><br>
+                From goal: <select name="fromGoal" required>
+                    <option th:each="savingsGoal : ${savingsGoals}" th:value="${savingsGoal.savingsGoalId}" th:text="${savingsGoal.goalName}"/>
+                </select><br/>
+                To goal: <select name="toGoal" required>
+                    <option th:each="savingsGoal : ${savingsGoals}" th:value="${savingsGoal.savingsGoalId}" th:text="${savingsGoal.goalName}"/>
+                </select><br/>
+                Amount: <input type="number" required th:field="*{amount}" step="any" /><br>
+                Notes: <textarea id="notes" th:field="*{notes}" style="width:250px; height:50px"></textarea><br>
+                <input type="submit" value="Submit" />
+            </fieldset>
+        </form>
+    </div>
+    
+    <p></p>
+
+    <p class="commonBoldTextFormat">Transactions</p>
+    
+    <table class="commonTableFormat">
+        <tr>
+            <th>Date</th>
+            <th>From Goal</th>
+            <th>To Goal</th>
+            <th>Amount</th>
+            <th>Notes</th>
+            <th>Delete</th>
+        </tr>
+        <tr th:each="transaction : ${transactions}">
+            <td th:text="${#dates.format(transaction.date, 'MM/dd/yyyy')}"></td>
+            <td th:text="${transaction.fromGoal.goalName}"></td>
+            <td th:text="${transaction.toGoal.goalName}"></td>
+            <td th:text="${#numbers.formatCurrency(transaction.amount)}"></td>
+            <td th:text="${transaction.notes}"></td>
+            <td><a href="deleteTransaction" th:href="@{/deleteTransaction(transactionId=${transaction.transactionId})}">X</a></td>
+        </tr>
+    </table>
+    
+   <script>require(["js/menu.js"], function(applyMenu){});</script>
+
+</body>
+</html>

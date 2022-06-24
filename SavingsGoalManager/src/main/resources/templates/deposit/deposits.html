@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" type="text/css" href="css/init_styles.css">
+    <link rel="stylesheet" type="text/css" href="js/dojo-themes/dojo.css">
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dijit/themes/tundra/tundra.css">
+    <script src="//ajax.googleapis.com/ajax/libs/dojo/1.14.1/dojo/dojo.js"></script>
+    <meta charset="UTF-8">
+    <title>Manage Deposits</title>
+</head>
+<body class="tundra">
+    
+    <div id="mainMenu" data-dojo-type="dijit/MenuBar"></div>
+    <p></p>
+
+    <p class="commonBoldTextFormat">Add A Deposit</p>
+    
+    <div class="formFrame">
+        <form th:action="@{addDeposit}" th:object="${deposit}" class="formFormat">
+            <fieldset>
+                Deposit Date: <input type="date" name="date"/><br>
+                Deposit Amount: <input type="number" name="amount" step="any" /><br>
+                <input type="submit" value="Submit" />
+            </fieldset>
+        </form>
+    </div>
+    
+    <p></p>
+
+    <p class="commonBoldTextFormat">Deposits</p>
+    
+    <table class="commonTableFormat">
+        <tr>
+            <th>Deposit Date</th>
+            <th>Amount</th>
+            <th>Apply Towards Goals</th> 
+            <th>Delete</th>
+        </tr>
+        <tr th:each="deposit : ${deposits}">
+            <td><a href="editDeposit" th:href="@{/editDeposit(depositId=${deposit.depositId})}"><span th:text="${#dates.format(deposit.date, 'MM/dd/yyyy')}"></span></a></td>
+            <td th:text="${deposit.amount}" />
+            <td><a th:href="@{/listGoalsAndDeposit(depositId=${deposit.depositId})}">Apply</a></td>
+            <td><a href="deleteDeposit" th:href="@{/deleteDeposit(depositId=${deposit.depositId})}">Delete</a></td>
+        </tr>
+    </table>
+    
+   <script>require(["js/menu.js"], function(applyMenu){});</script>
+
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" type="text/css" href="css/init_styles.css">
+    <link rel="stylesheet" type="text/css" href="js/dojo-themes/dojo.css">
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/dojo/1.14.1/dijit/themes/tundra/tundra.css">
+    <script src="//ajax.googleapis.com/ajax/libs/dojo/1.14.1/dojo/dojo.js"></script>
+    <meta charset="UTF-8">
+    <title>Add A New Savings Goal</title>
+</head>
+<body class="tundra">
+    
+    <div id="mainMenu" data-dojo-type="dijit/MenuBar"></div>
+    <p></p>
+
+    <p class="commonBoldTextFormat">Add A New Savings Goal</p>
+    
+    <div class="formFrame">
+        <form th:action="@{/addSavingsGoal}" class="formFormat" th:object="${savingsGoal}">
+            <fieldset>
+                Name: <input type="text" required id="goalName" th:field="*{goalName}" /><br>
+	            Start date: <input type="date" required id="savingsStartDate" th:field="*{savingsStartDate}" /><br>
+	            End date: <input type="date" required id="savingsEndDate" th:field="*{savingsEndDate}" /><br>
+	            Target amount: <input type="number" required id="targetAmount" th:field="*{targetAmount}" step="any" /><br>
+	            Initial amount: <input type="number" id="initialBalance" th:field="*{initialBalance}" step="any" /><br/>
+	            Current balance: <input type="number" id="currentBalance" th:field="*{currentBalance}" step="any" /><br/>
+	            Notes: <textarea id="notes" th:field="*{notes}" style="width:250px; height:50px"></textarea><br>
+                <input type="submit" value="Submit" />
+            </fieldset>
+        </form>
+    </div>
+    
+    <p></p>
+
+    <p class="commonBoldTextFormat">Savings Goals</p>
+    
+    <table class="commonTableFormat">
+        <tr>
+            <th>Savings Goal</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Target Amount</th>
+            <th>Initial Balance</th>
+            <th>Months</th>
+            <th>Savings Per Month</th>
+            <th>Weeks</th>
+            <th>Savings Per Week</th>
+            <th>Days</th>
+            <th>Savings Per Day</th>
+            <th>Current Balance</th>
+            <th>Delete</th>
+        </tr>
+        <tr th:each="savingsGoal : ${savingsGoals}">
+            <td><a href="editSavingsGoal" th:href="@{/editSavingsGoal(savingsGoalId=${savingsGoal.savingsGoalId})}"><span th:text="${savingsGoal.goalName}"></span></a></td>
+            <td th:text="${#dates.format(savingsGoal.savingsStartDate, 'MM/dd/yyyy')}"></td>
+            <td th:text="${#dates.format(savingsGoal.savingsEndDate, 'MM/dd/yyyy')}"></td>
+            <td th:text="${savingsGoal.targetAmount}"></td>
+            <td th:text="${savingsGoal.initialBalance}"></td>
+            <td th:text="${savingsGoal.monthsTillPayment}"></td>
+            <td th:text="${#numbers.formatCurrency(savingsGoal.savingsPerMonth)}"></td>
+            <td th:text="${savingsGoal.weeksTillPayment}"></td>
+            <td th:text="${#numbers.formatCurrency(savingsGoal.savingsPerWeek)}"></td>
+            <td th:text="${savingsGoal.daysTillPayment}"></td>
+            <td th:text="${#numbers.formatCurrency(savingsGoal.savingsPerDay)}"></td>
+            <td th:text="${#numbers.formatCurrency(savingsGoal.currentBalance)}"></td>
+            <td><a th:href="@{/deleteSavingsGoal(savingsGoalId=${savingsGoal.savingsGoalId})}">X</a></td>
+        </tr>
+        <tr>
+            <td><span th:text="${defaultGoal.goalName}"></span></td>
+            <td></td>
+            <td></td>
+            <td th:text="${defaultGoal.targetAmount}"></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td th:text="${#numbers.formatCurrency(defaultGoal.currentBalance)}"></td>
+            <td></td>
+        </tr>
+    </table>
+    
+   <script>require(["js/menu.js"], function(applyMenu){});</script>
+
+</body>
+</html>

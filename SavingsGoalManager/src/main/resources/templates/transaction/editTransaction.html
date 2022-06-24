@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" type="text/css" href="css/init_styles.css">
+    <link rel="stylesheet" type="text/css" href="js/dojo-themes/dojo.css">
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dijit/themes/tundra/tundra.css">
+    <script src="//ajax.googleapis.com/ajax/libs/dojo/1.14.1/dojo/dojo.js"></script>
+    <meta charset="UTF-8">
+    <title>Add A New Savings Goal</title>
+</head>
+<body class="tundra">
+    
+    <div id="mainMenu" data-dojo-type="dijit/MenuBar"></div>
+    <p></p>
+
+    <p class="commonBoldTextFormat">Add A New Savings Goal</p>
+    
+    <div class="formFrame">
+        <form th:action="@{/updateTransaction}" th:object="${transaction}" class="formFormat">
+            <fieldset>
+                <input type="hidden" th:field="*{transactionId}" th:value="${transaction.transactionId}" />
+                Date: <input type="date" required th:field="*{date}" th:value="${#dates.format(transaction.date, 'yyyy-MM-dd')}" /><br>
+                From goal: <select name="fromGoal" required>
+                    <option th:each="savingsGoal : ${savingsGoals}" th:value="${savingsGoal.savingsGoalId}" 
+                        th:selected="${savingsGoal.savingsGoalId == transaction.fromGoal.savingsGoalId}" th:text="${savingsGoal.goalName}" />
+                </select><br/>
+                To goal: <select name="toGoal" required>
+                    <option th:each="savingsGoal : ${savingsGoals}" th:value="${savingsGoal.savingsGoalId}"
+                        th:selected="${savingsGoal.savingsGoalId == transaction.toGoal.savingsGoalId}" th:text="${savingsGoal.goalName}"/>
+                </select><br/>
+                Amount: <input type="number" required th:field="*{amount}" step="any" th:value="${transaction.amount}" /><br>
+                Notes: <textarea th:field="*{notes}" style="width:200px; height:200px" th:value="${transaction.notes}"></textarea><br>
+                <input type="submit" value="Submit" />
+            </fieldset>
+        </form>
+    </div>
+    
+    <p></p>
+    
+   <script>require(["js/menu.js"], function(applyMenu){});</script>
+
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" type="text/css" href="css/init_styles.css">
+    <link rel="stylesheet" type="text/css" href="js/dojo-release-1.14.2/dojo/resources/dojo.css">
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dijit/themes/tundra/tundra.css">
+    <meta charset="UTF-8">
+    <title>Add A Budget Event</title>
+</head>
+<body class="tundra">
+    
+    <div id="mainMenu" data-dojo-type="dijit/MenuBar"></div>
+    <p></p>
+
+    <p class="commonBoldTextFormat">Add A Budget Event</p>
+    
+    <div class="formFrame">
+        <form action="addMonthlyBudget" class="formFormat">
+            <fieldset>
+                Month: <select name="month">
+                    <option value=""></option>
+                    <option value="1">January</option>
+                    <option value="2">February</option>
+                    <option value="3">March</option>
+                    <option value="4">April</option>
+                    <option value="5">May</option>
+                    <option value="6">June</option>
+                    <option value="7">July</option>
+                    <option value="8">August</option>
+                    <option value="9">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                </select><br>
+                Year: <select name="year">
+                    <option value=""></option>
+                    <option value="2018">2018</option>
+                    <option value="2019">2019</option>
+                    <option value="2020">2020</option>
+                    <option value="2021">2021</option>
+                </select><br>
+                Amount: <input type="number" name="amount" step="any" /><br>
+                <input type="submit" value="Submit" />
+            </fieldset>
+        </form>
+    </div>
+    
+    <p></p>
+
+    <p class="commonBoldTextFormat">Expenses</p>
+    
+    <table class="commonTableFormat">
+        <tr>
+            <th>Month</th>
+            <th>Year</th>
+            <th>Amount</th>
+        </tr>
+        <tr th:each="monthlyBudget : ${monthlyBudgets}">
+            <td><a href="getMonthlyBudget" th:href="@{/getMonthlyBudget(monthlyBudgetId=${monthlyBudget.monthlyBudgetId})}"><span th:text="${monthlyBudget.month}"></span></a></td>
+            <td th:text="${monthlyBudget.year}" />
+            <td th:text="${monthlyBudget.amount}"></td>
+        </tr>
+    </table>
+    
+    <!-- load Dojo -->
+   <script src="js/dojo-release-1.14.2/dojo/dojo.js"></script>
+    
+   <script>require(["js/menu.js"], function(applyMenu){});</script>
+
+</body>
+</html>
