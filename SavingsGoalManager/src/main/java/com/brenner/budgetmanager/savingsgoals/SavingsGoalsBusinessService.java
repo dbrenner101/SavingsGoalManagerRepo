@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
+import org.joda.time.Interval;
 import org.joda.time.Months;
 import org.joda.time.Weeks;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,9 +129,11 @@ public class SavingsGoalsBusinessService {
 		        Months months = Months.monthsBetween(startDate, endDate);
 		        log.debug("months between: {}", months.getMonths());
 		        goal.setMonthsTillPayment(months.getMonths());
-		        Float savingsPerMonth = targetBalance > 0 ? targetBalance / months.getMonths() : 0;
-		        log.debug("savingsPerMonth: {}", savingsPerMonth);;
-		        goal.setSavingsPerMonth(savingsPerMonth);
+		        if (months.getMonths() > 0) {
+		        	Float savingsPerMonth = targetBalance > 0 ? targetBalance / months.getMonths() : 0;
+		        	log.debug("savingsPerMonth: {}", savingsPerMonth);;
+		        	goal.setSavingsPerMonth(savingsPerMonth);
+		        }
 		        
 		        Weeks weeks = Weeks.weeksBetween(startDate, endDate);
 		        log.debug("Weeks between: {}", weeks.getWeeks());

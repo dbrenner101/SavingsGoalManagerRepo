@@ -46,7 +46,7 @@
             <th>Weeks</th>
             <th>Savings Per Week</th>
             <th>Days</th>
-            <th>Savings Per Day</th>
+            <!-- <th>Savings Per Day</th> -->
             <th>Current Balance</th>
             <th>Delete</th>
         </tr>
@@ -61,7 +61,7 @@
             <td th:text="${savingsGoal.weeksTillPayment}"></td>
             <td th:text="${#numbers.formatCurrency(savingsGoal.savingsPerWeek)}"></td>
             <td th:text="${savingsGoal.daysTillPayment}"></td>
-            <td th:text="${#numbers.formatCurrency(savingsGoal.savingsPerDay)}"></td>
+            <!-- <td th:text="${#numbers.formatCurrency(savingsGoal.savingsPerDay)}"></td> -->
             <td th:text="${#numbers.formatCurrency(savingsGoal.currentBalance)}"></td>
             <td><a th:href="@{/deleteSavingsGoal(savingsGoalId=${savingsGoal.savingsGoalId})}">X</a></td>
         </tr>
