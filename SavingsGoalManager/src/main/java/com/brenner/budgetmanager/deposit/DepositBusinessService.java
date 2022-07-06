@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.brenner.budgetmanager.exception.InvalidRequestException;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -32,6 +33,7 @@ public class DepositBusinessService {
 		return this.depositRepo.save(deposit);
 	}
 	
+	@Transactional()
 	public List<Deposit> getUnallocatedDeposits() {
 		
 		log.debug("Getting unallocated deposits");

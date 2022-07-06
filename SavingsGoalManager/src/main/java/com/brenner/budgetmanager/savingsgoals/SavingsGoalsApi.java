@@ -3,13 +3,11 @@
  */
 package com.brenner.budgetmanager.savingsgoals;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,23 +17,51 @@ import lombok.extern.slf4j.Slf4j;
  * 
  */
 @RestController
+@RequestMapping(path = "/api")
 @Slf4j
 public class SavingsGoalsApi {
 
 	@Autowired
-	SavingsGoalRepository savingsGoalRepo;
+	SavingsGoalsBusinessService service;
 	
-	@PutMapping(path="/savingsGoal/{id}")
-	public void updateSavingsGoal(@PathVariable Integer id, @RequestParam(name = "amount", required=true) Float amount) {
-		
-		log.debug("Call to update SavingsGoal: " + amount);
-		
-		Optional<SavingsGoal> optGoal = this.savingsGoalRepo.findById(id);
-		if (! optGoal.isEmpty()) {
-			SavingsGoal sg = optGoal.get();
-			sg.setCurrentBalance(sg.getCurrentBalance() + amount);
-			this.savingsGoalRepo.save(sg);
+	@GetMapping(path = "/savingsgoals")
+	public List<SavingsGoal> getAllSavingsGoals() {
+		List<SavingsGoal> goals = this.service.getAllSavingsGoals();
+		return goals;
+	}
+	
+	@PostMapping(path="/savingsgoals")
+	public SavingsGoal addSavingsGoal(@RequestBody SavingsGoal savingsGoal) {
+		if (savingsGoal.getCurrentBalance() == null) {
+			savingsGoal.setCurrentBalance(0F);
 		}
+		SavingsGoal newGoal = this.service.addSavingsGoal(savingsGoal);
+		return newGoal;
+	}
+	
+	@PutMapping(path="/savingsgoals/{id}")
+	public SavingsGoal updateSavingsGoal(@PathVariable Integer id, @RequestBody SavingsGoal savingsGoal) {
+		
+		log.debug("Call to update SavingsGoal: " + savingsGoal);
+		
+		SavingsGoal sg = this.service.getSavingsGoalById(id);
+		sg.setCurrentBalance(savingsGoal.getCurrentBalance());
+		sg.setGoalName(savingsGoal.getGoalName());
+		sg.setInitialBalance(savingsGoal.getInitialBalance());
+		sg.setTargetAmount(savingsGoal.getTargetAmount());
+		sg.setSavingsStartDate(savingsGoal.getSavingsStartDate());
+		sg.setSavingsEndDate(savingsGoal.getSavingsEndDate());
+		return this.service.updateSavingsGoal(sg);
+	}
+	
+	@DeleteMapping(path="/savingsgoals/{id}")
+	public void deleteSavingsGoal(@PathVariable Integer id) {
+		
+		SavingsGoal savingsGoal = this.service.getSavingsGoalById(id);
+		if (savingsGoal == null) {
+			///
+		}
+		this.service.deleteSavingsGoal(id);
 	}
 
 }
