@@ -1,23 +1,23 @@
 package com.brenner.budgetmanager.savingsgoals;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.brenner.budgetmanager.deposit.Deposit;
+import com.brenner.budgetmanager.deposit.DepositRepository;
+import com.brenner.budgetmanager.exception.InvalidRequestException;
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
-import org.joda.time.Interval;
 import org.joda.time.Months;
 import org.joda.time.Weeks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.brenner.budgetmanager.deposit.Deposit;
-import com.brenner.budgetmanager.deposit.DepositRepository;
-import com.brenner.budgetmanager.exception.InvalidRequestException;
+import java.util.List;
+import java.util.Optional;
 
-import lombok.extern.slf4j.Slf4j;
-
+/**
+ * Class to abstract the data persistence routines and manage any business logic required.
+ */
 @Service
 @Slf4j
 public class SavingsGoalsBusinessService {
@@ -27,14 +27,24 @@ public class SavingsGoalsBusinessService {
     
     @Autowired
     DepositRepository depositRepo;
-    
-    public SavingsGoal findDefaultGoal() {
+	
+	/**
+	 * Method to retrieve the goal that is flagged as default.
+	 *
+	 * @return An Optional<SavingsGoal> or Optional.empty() if there is no default goal.
+	 */
+	public Optional<SavingsGoal> findDefaultGoal() {
     	
-    	Optional<SavingsGoal> optGoal = this.savingsGoalRepo.findByIsDefault(true);
-    	
-    	return optGoal.get();
+    	return this.savingsGoalRepo.findByIsDefault(true);
     }
-    
+	
+	/**
+	 * Handles calling persistance for a new goal. The goal is decorated before saving
+	 * @see #decorateSavingsGoal
+	 *
+	 * @param goal The goal data to persist
+	 * @return The persisted object including unique identifier.
+	 */
     public SavingsGoal addSavingsGoal(SavingsGoal goal) {
     	
     	if (goal == null) {
@@ -52,7 +62,14 @@ public class SavingsGoalsBusinessService {
         log.info("Exiting saveSavingsGoal()");
         return savingsGoal;
     }
-    
+	
+	/**
+	 * Handles updating a SavingsGoal. The goal is decorated before persistence.
+	 * @see #decorateSavingsGoal
+	 *
+	 * @param goal The goal data to persist
+	 * @return The object after persistence
+	 */
     public SavingsGoal updateSavingsGoal(SavingsGoal goal) {
         log.info("Entered updateSavingsGoal()");
         log.debug("Param: savingsGoal: {}", goal);
@@ -64,7 +81,18 @@ public class SavingsGoalsBusinessService {
         
         return this.savingsGoalRepo.save(goal);
     }
-    
+	
+	/**
+	 * Method to take a list of goal ids and a list of amounts and update their current balance. This is a fragile method and
+	 * assumes the lists members are in alignment.
+	 *
+	 * This method will retrieve each goal and update its current balance based on the allocated amount. After updates
+	 * are complete the deposit will be marked as allocated.
+	 *
+	 * @param depositId The deposit that allocations are derived from
+	 * @param savingGoalIds List of goal unique identifiers.
+	 * @param amountsToAllocate The amounts to allocate towards each goal.
+	 */
     protected void allocateDepositToGoals(Long depositId, List<Integer> savingGoalIds, List<Float> amountsToAllocate) {
     	
     	Deposit deposit = this.depositRepo.findById(depositId).get();
@@ -81,16 +109,61 @@ public class SavingsGoalsBusinessService {
     	}
     	
     	log.debug("Remaining deposit: " + remainingDeposit);
-    	
-    	SavingsGoal defaultGoal = this.savingsGoalRepo.findByIsDefault(true).get();
-    	defaultGoal.setCurrentBalance(defaultGoal.getCurrentBalance() == null ? remainingDeposit : defaultGoal.getCurrentBalance() + remainingDeposit);
-    	updateSavingsGoal(defaultGoal);
+	
+		updateDefaultGoalBalance(remainingDeposit);
     	
     	deposit.setAllocated(true);
     	this.depositRepo.save(deposit);
     }
-    
-    public void deleteSavingsGoal(Integer savingsGoalId) {
+	
+	/**
+	 * Method to take a list of allocation objects
+	 *
+	 * 	 This method will retrieve each goal and update its current balance based on the allocated amount. After updates
+	 * 	 are complete the deposit will be marked as allocated.
+	 * @param amountsToAllocate The list of goal ids and allocation amounts.
+	 */
+	protected void allocateDepositToGoals(List<SavingsGoalDepositAllocation> amountsToAllocate) {
+		
+		Long depositId = amountsToAllocate.get(0).getDepositId();
+		Deposit deposit = this.depositRepo.findById(depositId).get();
+		Float depositAmount = deposit.getAmount();
+		Float remainingDeposit = depositAmount;
+		
+		for (SavingsGoalDepositAllocation allocation : amountsToAllocate) {
+			Integer goalId = allocation.getSavingsGoalId();
+			SavingsGoal goal = this.savingsGoalRepo.findById(goalId).get();
+			Float amount = allocation.getAllocationAmount();
+			goal.setCurrentBalance(goal.getCurrentBalance() == null ? amount : goal.getCurrentBalance() + amount);
+			updateSavingsGoal(goal);
+			remainingDeposit -= amount;
+		}
+		
+		log.debug("Remaining deposit: " + remainingDeposit);
+		
+		updateDefaultGoalBalance(remainingDeposit);
+		
+		deposit.setAllocated(true);
+		this.depositRepo.save(deposit);
+	}
+	
+	/**
+	 * Any excess or shorfall in the allocation is assigned to the default goal.
+	 *
+	 * @param balanceChange Balance to assign to the default goal.
+	 */
+	private void updateDefaultGoalBalance(Float balanceChange) {
+		SavingsGoal defaultGoal = this.savingsGoalRepo.findByIsDefault(true).get();
+		defaultGoal.setCurrentBalance(defaultGoal.getCurrentBalance() == null ? balanceChange : defaultGoal.getCurrentBalance() + balanceChange);
+		updateSavingsGoal(defaultGoal);
+	}
+	
+	/**
+	 * Method to delete a specific goal. A RuntimeException is produced if the goal does not exist.
+	 *
+	 * @param savingsGoalId Goal unique identifier.
+	 */
+	public void deleteSavingsGoal(Integer savingsGoalId) {
     	
     	Optional<SavingsGoal> optSavingsGoal = this.savingsGoalRepo.findById(savingsGoalId);
     	
@@ -99,7 +172,13 @@ public class SavingsGoalsBusinessService {
     	}
     	this.savingsGoalRepo.delete(optSavingsGoal.get());
     }
-    
+	
+	/**
+	 * Method to complete derived fields like weeks till goal and dollars per month, etc.
+	 *
+	 * @param goal The base goal
+	 * @return A completed entity graph.
+	 */
     public SavingsGoal decorateSavingsGoal(SavingsGoal goal) {
     	
     	if (goal == null) {
@@ -153,8 +232,13 @@ public class SavingsGoalsBusinessService {
         
         return goal;
     }
-    
-    public List<SavingsGoal> getAllSavingsGoalsButDefault() {
+	
+	/**
+	 * Retrieves all of the savings goals except the default goal which needs special handling.
+	 *
+	 * @return The list of Savings Goals
+	 */
+	public List<SavingsGoal> getAllSavingsGoalsButDefault() {
         log.info("Entered getAllSavingsGoalsButDefault()");
         
         List<SavingsGoal> goals = this.savingsGoalRepo.findAllByIsDefaultFalse(Sort.by(Sort.Direction.ASC, "goalName"));
@@ -163,8 +247,14 @@ public class SavingsGoalsBusinessService {
         log.info("Exiting getAllSavingsGoalsButDefault()");
         return goals;
     }
-    
-    public SavingsGoal getSavingsGoalById(Integer goalId) {
+	
+	/**
+	 * Attempts to retrieve the goal identified by the id.
+	 *
+	 * @param goalId The goal's unique identifier
+	 * @return An Optional instance of the goal or Optional.empty
+	 */
+    public Optional<SavingsGoal> getSavingsGoalById(Integer goalId) {
     	
     	if (goalId == null) {
     		throw new InvalidRequestException("Goal id must be non-null.");
@@ -173,16 +263,16 @@ public class SavingsGoalsBusinessService {
         log.info("Entered getSavingsGoalById()");
         log.debug("Param: savingsGoalId: {}", goalId);
         
-        Optional<SavingsGoal> optSavingsGoal = this.savingsGoalRepo.findById(goalId);
-        
-        SavingsGoal goal = optSavingsGoal.get();
-        log.debug("Returing savingsGoal: {}", goal);
-        
         log.info("Exiting getSavingsGoalById()");
-        return goal;
+        return this.savingsGoalRepo.findById(goalId);
     }
-    
-    public List<SavingsGoal> getAllSavingsGoals() {
+	
+	/**
+	 * Access to a list of all goals sorted by goal name.
+	 *
+	 * @return The sorted list of goals
+	 */
+	public List<SavingsGoal> getAllSavingsGoals() {
     	
     	return this.savingsGoalRepo.findAll(Sort.by(Sort.Direction.ASC, "goalName"));
     }
