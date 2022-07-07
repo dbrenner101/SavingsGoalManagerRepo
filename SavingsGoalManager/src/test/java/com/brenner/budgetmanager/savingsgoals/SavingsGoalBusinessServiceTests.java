@@ -3,20 +3,9 @@
  */
 package com.brenner.budgetmanager.savingsgoals;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-
+import com.brenner.budgetmanager.deposit.Deposit;
+import com.brenner.budgetmanager.deposit.DepositRepository;
+import com.brenner.budgetmanager.exception.InvalidRequestException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.BeanUtils;
@@ -25,9 +14,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Sort;
 
-import com.brenner.budgetmanager.deposit.Deposit;
-import com.brenner.budgetmanager.deposit.DepositRepository;
-import com.brenner.budgetmanager.exception.InvalidRequestException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -65,7 +56,7 @@ public class SavingsGoalBusinessServiceTests {
 		
 		Mockito.when(this.repo.findByIsDefault(true)).thenReturn(Optional.of(this.sg3));
 		
-		SavingsGoal defaultGoal = this.service.findDefaultGoal();
+		SavingsGoal defaultGoal = this.service.findDefaultGoal().get();
 		
 		assertNotNull(defaultGoal);
 		assertEquals(this.sg3, defaultGoal);
@@ -177,7 +168,7 @@ public class SavingsGoalBusinessServiceTests {
 		
 		Mockito.when(this.repo.findById(this.sg3.getSavingsGoalId())).thenReturn(Optional.of(this.sg3));
 		
-		SavingsGoal goal = this.service.getSavingsGoalById(this.sg3.getSavingsGoalId());
+		SavingsGoal goal = this.service.getSavingsGoalById(this.sg3.getSavingsGoalId()).get();
 		
 		assertNotNull(goal);
 		assertEquals(goal.getGoalName(), this.sg3.getGoalName());
