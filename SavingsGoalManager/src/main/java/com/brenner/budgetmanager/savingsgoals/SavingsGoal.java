@@ -1,15 +1,15 @@
 package com.brenner.budgetmanager.savingsgoals;
 
-import java.util.Date;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.persistence.*;
+import java.util.Date;
+
+/**
+ * Entity object representing a savings goal. A savings goal consists of some financial target in the future that is
+ * specifically bounded by a start date, end date and target amount. Optionally an initial balance and current balance can
+ * be included.
+ */
 @Entity
 @Table(name = "savings_goals")
 public class SavingsGoal {
@@ -181,8 +181,45 @@ public class SavingsGoal {
 	public void setInitialBalance(Float initialBalance) {
 		this.initialBalance = initialBalance;
 	}
-
-	@Override
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        
+        SavingsGoal that = (SavingsGoal) o;
+        
+        if (isDefault != that.isDefault) return false;
+        if (savingsGoalId != null ? !savingsGoalId.equals(that.savingsGoalId) : that.savingsGoalId != null)
+            return false;
+        if (goalName != null ? !goalName.equals(that.goalName) : that.goalName != null) return false;
+        if (savingsStartDate != null ? !savingsStartDate.equals(that.savingsStartDate) : that.savingsStartDate != null)
+            return false;
+        if (savingsEndDate != null ? !savingsEndDate.equals(that.savingsEndDate) : that.savingsEndDate != null)
+            return false;
+        if (targetAmount != null ? !targetAmount.equals(that.targetAmount) : that.targetAmount != null) return false;
+        if (initialBalance != null ? !initialBalance.equals(that.initialBalance) : that.initialBalance != null)
+            return false;
+        if (currentBalance != null ? !currentBalance.equals(that.currentBalance) : that.currentBalance != null)
+            return false;
+        return notes != null ? notes.equals(that.notes) : that.notes == null;
+    }
+    
+    @Override
+    public int hashCode() {
+        int result = savingsGoalId != null ? savingsGoalId.hashCode() : 0;
+        result = 31 * result + (goalName != null ? goalName.hashCode() : 0);
+        result = 31 * result + (savingsStartDate != null ? savingsStartDate.hashCode() : 0);
+        result = 31 * result + (savingsEndDate != null ? savingsEndDate.hashCode() : 0);
+        result = 31 * result + (targetAmount != null ? targetAmount.hashCode() : 0);
+        result = 31 * result + (initialBalance != null ? initialBalance.hashCode() : 0);
+        result = 31 * result + (currentBalance != null ? currentBalance.hashCode() : 0);
+        result = 31 * result + (isDefault ? 1 : 0);
+        result = 31 * result + (notes != null ? notes.hashCode() : 0);
+        return result;
+    }
+    
+    @Override
 	public String toString() {
 		return "SavingsGoal [savingsGoalId=" + savingsGoalId + ", goalName=" + goalName + ", savingsStartDate="
 				+ savingsStartDate + ", savingsEndDate=" + savingsEndDate + ", targetAmount=" + targetAmount
