@@ -4,23 +4,16 @@
 package com.brenner.budgetmanager.deposit;
 
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-
+import com.brenner.budgetmanager.exception.InvalidRequestException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import com.brenner.budgetmanager.exception.InvalidRequestException;
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -67,9 +60,10 @@ public class DepositBusinessServiceTests {
 		
 		Mockito.when(this.depositRepo.findById(this.d1.getDepositId())).thenReturn(Optional.of(this.d1));
 		
-		Deposit deposit = this.service.getDeposit(this.d1.getDepositId());
+		Optional<Deposit> optDeposit = this.service.getDeposit(this.d1.getDepositId());
+		assertTrue(optDeposit.isPresent());
 		
-		assertNotNull(deposit);
+		Deposit deposit = optDeposit.get();
 		assertEquals(this.d1, deposit);
 	}
 	
