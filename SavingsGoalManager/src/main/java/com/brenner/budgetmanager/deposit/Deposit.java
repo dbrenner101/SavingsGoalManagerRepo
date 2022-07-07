@@ -3,17 +3,13 @@
  */
 package com.brenner.budgetmanager.deposit;
 
-import java.util.Date;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.persistence.*;
+import java.util.Date;
+
 /**
+ * Class represents a total sum of money to be applied towards one or more goals.
  *
  * @author dbrenner
  * 
@@ -26,18 +22,27 @@ public class Deposit {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long depositId;
 	
+	/** totale deposit amount */
 	private Float amount;
 	
+	/** Date of the deposit */
 	@DateTimeFormat(pattern = "yyyy-MM-dd", fallbackPatterns = {"MM/dd/yyyy", "yy-MM-dd"})
 	private Date date;
 	
+	/** Flag to identify of the deposit has been allocated or not */
 	private boolean allocated;
 
-	/**
-	 * 
-	 */
+	/** Default constructor. */
 	public Deposit() {}
 	
+	/**
+	 * Constructor to populate fields.
+	 *
+	 * @param depositId
+	 * @param amount
+	 * @param date
+	 * @param allocated
+	 */
 	public Deposit(Long depositId, Float amount, Date date, Boolean allocated) {
 		this.depositId = depositId;
 		this.amount = amount;
@@ -76,7 +81,29 @@ public class Deposit {
 	public void setAllocated(boolean allocated) {
 		this.allocated = allocated;
 	}
-
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		
+		Deposit deposit = (Deposit) o;
+		
+		if (allocated != deposit.allocated) return false;
+		if (depositId != null ? !depositId.equals(deposit.depositId) : deposit.depositId != null) return false;
+		if (amount != null ? !amount.equals(deposit.amount) : deposit.amount != null) return false;
+		return date != null ? date.equals(deposit.date) : deposit.date == null;
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = depositId != null ? depositId.hashCode() : 0;
+		result = 31 * result + (amount != null ? amount.hashCode() : 0);
+		result = 31 * result + (date != null ? date.hashCode() : 0);
+		result = 31 * result + (allocated ? 1 : 0);
+		return result;
+	}
+	
 	@Override
 	public String toString() {
 		return "Deposit [depositId=" + depositId + ", amount=" + amount + ", date=" + date + ", allocated=" + allocated
