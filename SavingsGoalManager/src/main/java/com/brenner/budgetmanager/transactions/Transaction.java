@@ -3,20 +3,15 @@
  */
 package com.brenner.budgetmanager.transactions;
 
-import java.util.Date;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-
+import com.brenner.budgetmanager.savingsgoals.SavingsGoal;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.brenner.budgetmanager.savingsgoals.SavingsGoal;
+import javax.persistence.*;
+import java.util.Date;
 
 /**
- *
+ *Entity object that represents a transaction. A transaction is the decrementing or transferring of funds from one
+ * savings goal to another.
  * @author dbrenner
  * 
  */
@@ -100,7 +95,34 @@ public class Transaction {
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
-
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		
+		Transaction that = (Transaction) o;
+		
+		if (transactionId != null ? !transactionId.equals(that.transactionId) : that.transactionId != null)
+			return false;
+		if (date != null ? !date.equals(that.date) : that.date != null) return false;
+		if (fromGoal != null ? !fromGoal.equals(that.fromGoal) : that.fromGoal != null) return false;
+		if (toGoal != null ? !toGoal.equals(that.toGoal) : that.toGoal != null) return false;
+		if (amount != null ? !amount.equals(that.amount) : that.amount != null) return false;
+		return notes != null ? notes.equals(that.notes) : that.notes == null;
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = transactionId != null ? transactionId.hashCode() : 0;
+		result = 31 * result + (date != null ? date.hashCode() : 0);
+		result = 31 * result + (fromGoal != null ? fromGoal.hashCode() : 0);
+		result = 31 * result + (toGoal != null ? toGoal.hashCode() : 0);
+		result = 31 * result + (amount != null ? amount.hashCode() : 0);
+		result = 31 * result + (notes != null ? notes.hashCode() : 0);
+		return result;
+	}
+	
 	@Override
 	public String toString() {
 		return "Transaction [transactionId=" + transactionId + ", date=" + date + ", fromGoal=" + fromGoal + ", toGoal="
