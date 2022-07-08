@@ -16,7 +16,7 @@
 	<description>Savings Goals Manager</description>
 	<properties>
 		<java.version>17</java.version>
-        <start-class>com.brenner.budgetmanager.BudgetManager2Application</start-class>
+        <start-class>com.brenner.budgetmanager.SavingsGoalsApplication</start-class>
 	</properties>
 	<dependencies>
 		<dependency>

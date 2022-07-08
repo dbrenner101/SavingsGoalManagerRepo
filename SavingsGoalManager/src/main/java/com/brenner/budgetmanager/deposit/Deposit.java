@@ -6,6 +6,7 @@ package com.brenner.budgetmanager.deposit;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -23,7 +24,7 @@ public class Deposit {
 	private Long depositId;
 	
 	/** totale deposit amount */
-	private Float amount;
+	private BigDecimal amount;
 	
 	/** Date of the deposit */
 	@DateTimeFormat(pattern = "yyyy-MM-dd", fallbackPatterns = {"MM/dd/yyyy", "yy-MM-dd"})
@@ -43,7 +44,7 @@ public class Deposit {
 	 * @param date
 	 * @param allocated
 	 */
-	public Deposit(Long depositId, Float amount, Date date, Boolean allocated) {
+	public Deposit(Long depositId, BigDecimal amount, Date date, Boolean allocated) {
 		this.depositId = depositId;
 		this.amount = amount;
 		this.date = date;
@@ -58,11 +59,11 @@ public class Deposit {
 		this.depositId = depositId;
 	}
 
-	public Float getAmount() {
+	public BigDecimal getAmount() {
 		return amount;
 	}
 
-	public void setAmount(Float amount) {
+	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
 	}
 

@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -32,9 +33,9 @@ public class DepositApiTests {
     @Autowired
     private ObjectMapper objectMapper;
     
-    Deposit d1 = new Deposit(1L, 100.5F, new Date(), false);
-    Deposit d2 = new Deposit(2L, 200.5F, new Date(), false);
-    Deposit d3 = new Deposit(3L, 300.5F, new Date(), false);
+    Deposit d1 = new Deposit(1L, BigDecimal.valueOf(100.5), new Date(), false);
+    Deposit d2 = new Deposit(2L, BigDecimal.valueOf(200.5), new Date(), false);
+    Deposit d3 = new Deposit(3L, BigDecimal.valueOf(300.5), new Date(), false);
     
     @Test
     public void testGetAllDeposits_Success() throws Exception {

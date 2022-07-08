@@ -7,6 +7,7 @@ import com.brenner.budgetmanager.savingsgoals.SavingsGoal;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -31,16 +32,18 @@ public class Transaction {
 	@ManyToOne
 	private SavingsGoal toGoal;
 	
-	private Float amount;
+	private BigDecimal amount;
 	
 	private String notes;
+	
+	private boolean applied;
 
 	/**
 	 * 
 	 */
 	public Transaction() {}
 	
-	public Transaction(Long transactionId, Date date, SavingsGoal fromGoal, SavingsGoal toGoal, Float amount) {
+	public Transaction(Long transactionId, Date date, SavingsGoal fromGoal, SavingsGoal toGoal, BigDecimal amount) {
 		this.transactionId = transactionId;
 		this.date = date;
 		this.fromGoal = fromGoal;
@@ -80,11 +83,11 @@ public class Transaction {
 		this.toGoal = toGoal;
 	}
 
-	public Float getAmount() {
+	public BigDecimal getAmount() {
 		return amount;
 	}
 
-	public void setAmount(Float amount) {
+	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
 	}
 
@@ -96,6 +99,14 @@ public class Transaction {
 		this.notes = notes;
 	}
 	
+	public boolean getApplied() {
+		return applied;
+	}
+	
+	public void setApplied(boolean applied) {
+		this.applied = applied;
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -103,6 +114,7 @@ public class Transaction {
 		
 		Transaction that = (Transaction) o;
 		
+		if (applied != that.applied) return false;
 		if (transactionId != null ? !transactionId.equals(that.transactionId) : that.transactionId != null)
 			return false;
 		if (date != null ? !date.equals(that.date) : that.date != null) return false;
@@ -120,13 +132,21 @@ public class Transaction {
 		result = 31 * result + (toGoal != null ? toGoal.hashCode() : 0);
 		result = 31 * result + (amount != null ? amount.hashCode() : 0);
 		result = 31 * result + (notes != null ? notes.hashCode() : 0);
+		result = 31 * result + (applied ? 1 : 0);
 		return result;
 	}
 	
 	@Override
 	public String toString() {
-		return "Transaction [transactionId=" + transactionId + ", date=" + date + ", fromGoal=" + fromGoal + ", toGoal="
-				+ toGoal + ", amount=" + amount + ", notes=" + notes + "]";
+		final StringBuilder sb = new StringBuilder("Transaction{");
+		sb.append("transactionId=").append(transactionId);
+		sb.append(", date=").append(date);
+		sb.append(", fromGoal=").append(fromGoal);
+		sb.append(", toGoal=").append(toGoal);
+		sb.append(", amount=").append(amount);
+		sb.append(", notes='").append(notes).append('\'');
+		sb.append(", applied=").append(applied);
+		sb.append('}');
+		return sb.toString();
 	}
-
 }

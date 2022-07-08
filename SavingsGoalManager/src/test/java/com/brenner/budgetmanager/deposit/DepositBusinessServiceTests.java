@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,9 +30,9 @@ public class DepositBusinessServiceTests {
 	@Autowired
 	DepositBusinessService service;
 	
-	Deposit d1 = new Deposit(1L, 100.5F, new Date(), false);
-	Deposit d2 = new Deposit(2L, 50F, new Date(), false);
-	Deposit d3 = new Deposit(3L, 5500.75F, new Date(), true);
+	Deposit d1 = new Deposit(1L, BigDecimal.valueOf(100.5), new Date(), false);
+	Deposit d2 = new Deposit(2L, BigDecimal.valueOf(50), new Date(), false);
+	Deposit d3 = new Deposit(3L, BigDecimal.valueOf(5500.75), new Date(), true);
 	
 	@Test
 	public void testSaveDeposit_Success() throws Exception {

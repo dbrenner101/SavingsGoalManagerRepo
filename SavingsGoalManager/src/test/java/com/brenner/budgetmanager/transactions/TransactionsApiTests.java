@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -34,13 +35,16 @@ public class TransactionsApiTests {
     @MockBean
     TransactionBusinessService service;
     
-    SavingsGoal sg1 = new SavingsGoal(1, "Goal 1", new Date(), new Date(), 100F, 50F, 25F, false);
-    SavingsGoal sg2 = new SavingsGoal(2, "Goal 2", new Date(), new Date(), 100F, 50F, 25F, false);
-    SavingsGoal sg3 = new SavingsGoal(3, "Goal 3", new Date(), new Date(), 100F, 50F, 25F, false);
+    SavingsGoal sg1 = new SavingsGoal(1, "Goal 1", new Date(), new Date(),
+            BigDecimal.valueOf(100), BigDecimal.valueOf(50), BigDecimal.valueOf(25), false);
+    SavingsGoal sg2 = new SavingsGoal(2, "Goal 2", new Date(), new Date(),
+            BigDecimal.valueOf(100), BigDecimal.valueOf(50), BigDecimal.valueOf(25), false);
+    SavingsGoal sg3 = new SavingsGoal(3, "Goal 3", new Date(), new Date(),
+            BigDecimal.valueOf(100), BigDecimal.valueOf(50), BigDecimal.valueOf(25), false);
     
-    Transaction t1 = new Transaction(1L, new Date(), sg1, sg1, 100F);
-    Transaction t2 = new Transaction(2L, new Date(), sg2, sg2, 100F);
-    Transaction t3 = new Transaction(3L, new Date(), sg3, sg3, 100F);
+    Transaction t1 = new Transaction(1L, new Date(), sg1, sg1, BigDecimal.valueOf(100));
+    Transaction t2 = new Transaction(2L, new Date(), sg2, sg2, BigDecimal.valueOf(100));
+    Transaction t3 = new Transaction(3L, new Date(), sg3, sg3, BigDecimal.valueOf(100));
     
     @Test
     public void testGetAllTransactions_Success() throws Exception {

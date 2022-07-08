@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -32,9 +33,9 @@ public class DepositControllerTests {
 	@Autowired
     MockMvc mockMvc;
 	
-	Deposit d1 = new Deposit(1L, 100.5F, new Date(), false);
-	Deposit d2 = new Deposit(2L, 50F, new Date(), false);
-	Deposit d3 = new Deposit(3L, 5500.75F, new Date(), true);
+	Deposit d1 = new Deposit(1L, BigDecimal.valueOf(100.5), new Date(), false);
+	Deposit d2 = new Deposit(2L, BigDecimal.valueOf(50), new Date(), false);
+	Deposit d3 = new Deposit(3L, BigDecimal.valueOf(5500.75), new Date(), true);
 	
 	@Test
 	public void testGetUnallocatedDeposits_Success() throws Exception {

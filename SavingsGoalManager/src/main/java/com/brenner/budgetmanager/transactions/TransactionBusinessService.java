@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,16 +52,16 @@ public class TransactionBusinessService {
 		SavingsGoal toGoal = transaction.getToGoal();
 		log.debug("toGoal: " + toGoal);
 		
-		Float amount = transaction.getAmount();
+		BigDecimal amount = transaction.getAmount();
 		log.debug("amount: " + amount);
 		
 		if (toGoal == null || toGoal.getSavingsGoalId().equals(fromGoal.getSavingsGoalId())) {
-			fromGoal.setCurrentBalance(fromGoal.getCurrentBalance() - amount);
+			fromGoal.setCurrentBalance(fromGoal.getCurrentBalance().subtract(amount));
 			this.savingsGoalService.updateSavingsGoal(fromGoal);
 		}
 		else {
-			fromGoal.setCurrentBalance(fromGoal.getCurrentBalance() - amount);
-			toGoal.setCurrentBalance(toGoal.getCurrentBalance() + amount);
+			fromGoal.setCurrentBalance(fromGoal.getCurrentBalance().subtract(amount));
+			toGoal.setCurrentBalance(toGoal.getCurrentBalance().add(amount));
 			this.savingsGoalService.updateSavingsGoal(fromGoal);
 			this.savingsGoalService.updateSavingsGoal(toGoal);
 		}
@@ -88,16 +89,16 @@ public class TransactionBusinessService {
 		SavingsGoal toGoal = transaction.getToGoal();
 		log.debug("toGoal: " + toGoal);
 		
-		Float amount = transaction.getAmount();
+		BigDecimal amount = transaction.getAmount();
 		log.debug("amount: " + amount);
 		
 		if (toGoal == null || toGoal.getSavingsGoalId().equals(fromGoal.getSavingsGoalId())) {
-			fromGoal.setCurrentBalance(fromGoal.getCurrentBalance() + amount);
+			fromGoal.setCurrentBalance(fromGoal.getCurrentBalance().add(amount));
 			this.savingsGoalService.updateSavingsGoal(fromGoal);
 		}
 		else {
-			fromGoal.setCurrentBalance(fromGoal.getCurrentBalance() + amount);
-			toGoal.setCurrentBalance(toGoal.getCurrentBalance() - amount);
+			fromGoal.setCurrentBalance(fromGoal.getCurrentBalance().add(amount));
+			toGoal.setCurrentBalance(toGoal.getCurrentBalance().subtract(amount));
 			this.savingsGoalService.updateSavingsGoal(fromGoal);
 			this.savingsGoalService.updateSavingsGoal(toGoal);
 		}

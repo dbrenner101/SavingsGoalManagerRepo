@@ -14,6 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Sort;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -39,16 +41,16 @@ public class SavingsGoalBusinessServiceTests {
 	
 	private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("MM/dd/yyyy");
 	
-	SavingsGoal sg1 = new SavingsGoal(1, "Goal One", convertStringToDate("1/1/2021"), convertStringToDate("1/31/2021"), 
-			100F, 0F, 10F, false);
-	SavingsGoal sg2 = new SavingsGoal(2, "Goal Two", convertStringToDate("9/1/2022"), convertStringToDate("9/1/2023"), 
-			500F, 0F, 0F, false);
-	SavingsGoal sg3 = new SavingsGoal(3, "Goal Three", convertStringToDate("5/1/2022"), convertStringToDate("6/30/2022"), 
-			150F, 100F, 100F, true);
+	SavingsGoal sg1 = new SavingsGoal(1, "Goal One", convertStringToDate("1/1/2021"), convertStringToDate("1/31/2021"),
+			BigDecimal.valueOf(100), BigDecimal.valueOf(0), BigDecimal.valueOf(10), false);
+	SavingsGoal sg2 = new SavingsGoal(2, "Goal Two", convertStringToDate("9/1/2022"), convertStringToDate("9/1/2023"),
+			BigDecimal.valueOf(500), BigDecimal.valueOf(0), BigDecimal.valueOf(0), false);
+	SavingsGoal sg3 = new SavingsGoal(3, "Goal Three", convertStringToDate("5/1/2022"), convertStringToDate("6/30/2022"),
+			BigDecimal.valueOf(150), BigDecimal.valueOf(100), BigDecimal.valueOf(100), true);
 	
-	Deposit d1 = new Deposit(1L, 100.5F, new Date(), false);
-	Deposit d2 = new Deposit(2L, 50F, new Date(), false);
-	Deposit d3 = new Deposit(3L, 5500.75F, new Date(), true);
+	Deposit d1 = new Deposit(1L, BigDecimal.valueOf(100.5), new Date(), false);
+	Deposit d2 = new Deposit(2L, BigDecimal.valueOf(50), new Date(), false);
+	Deposit d3 = new Deposit(3L, BigDecimal.valueOf(5500.75), new Date(), true);
 	
 	
 	@Test
@@ -95,13 +97,13 @@ public class SavingsGoalBusinessServiceTests {
 		assertEquals(this.sg2.getGoalName(), goal.getGoalName());
 		assertNotNull(goal.getMonthsTillPayment());
 		assertEquals(12, goal.getMonthsTillPayment());
-		assertEquals(this.sg2.getTargetAmount()/12, goal.getSavingsPerMonth());
+		assertEquals(this.sg2.getTargetAmount().divide(BigDecimal.valueOf(12), 2, RoundingMode.HALF_UP), goal.getSavingsPerMonth());
 		assertNotNull(goal.getWeeksTillPayment());
 		assertEquals(52, goal.getWeeksTillPayment());
-		assertEquals(this.sg2.getTargetAmount()/52, goal.getSavingsPerWeek());
+		assertEquals(this.sg2.getTargetAmount().divide(BigDecimal.valueOf(52), 2, RoundingMode.HALF_UP), goal.getSavingsPerWeek());
 		assertNotNull(goal.getDaysTillPayment());
 		assertEquals(365, goal.getDaysTillPayment());
-		assertEquals(this.sg2.getTargetAmount()/365, goal.getSavingsPerDay());
+		assertEquals(this.sg2.getTargetAmount().divide(BigDecimal.valueOf(365), 2, RoundingMode.HALF_UP), goal.getSavingsPerDay());
 		
 	}
 	
@@ -121,9 +123,9 @@ public class SavingsGoalBusinessServiceTests {
 		assertNull(goal.getMonthsTillPayment());
 		assertNull(goal.getWeeksTillPayment());
 		assertNull(goal.getDaysTillPayment());
-		assertNull(goal.getSavingsPerMonth());
-		assertNull(goal.getSavingsPerWeek());
-		assertNull(goal.getSavingsPerDay());
+		assertEquals(0, goal.getSavingsPerMonth());
+		assertEquals(0, goal.getSavingsPerWeek());
+		assertEquals(0, goal.getSavingsPerDay());
 	}
 	
 	@Test
@@ -196,7 +198,7 @@ public class SavingsGoalBusinessServiceTests {
 		this.service.allocateDepositToGoals(
 				this.d2.getDepositId(), 
 				Arrays.asList(this.sg1.getSavingsGoalId(), this.sg2.getSavingsGoalId()), 
-				Arrays.asList(100F, 50.55F));
+				Arrays.asList(BigDecimal.valueOf(100), BigDecimal.valueOf(50.55)));
 		
 		
 	}

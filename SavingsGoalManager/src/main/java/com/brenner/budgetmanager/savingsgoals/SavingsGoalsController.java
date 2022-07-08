@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,7 +74,7 @@ public class SavingsGoalsController {
     public String allocatedDepositToGoals(
     		@RequestParam(name="depositId") Long depositId,
     		@RequestParam(name="savingsGoalId") List<Integer> savingsGoalIds,
-    		@RequestParam(name="amountTowardsGoal") List<Float> amountTowardsGoal) {
+    		@RequestParam(name="amountTowardsGoal") List<BigDecimal> amountTowardsGoal) {
     	
     	this.savingsGoalService.allocateDepositToGoals(depositId, savingsGoalIds, amountTowardsGoal);
     	
@@ -185,10 +186,10 @@ public class SavingsGoalsController {
         }
     	
     	SavingsGoal goal = optionalSavingsGoal.get();
-    	Float currentBalance = goal.getCurrentBalance();
-    	if (currentBalance > 0) {
+    	BigDecimal currentBalance = goal.getCurrentBalance();
+    	if (currentBalance.floatValue() > 0) {
     		SavingsGoal defaultGoal = optDefaultGoal.get();
-    		defaultGoal.setCurrentBalance(defaultGoal.getCurrentBalance() + currentBalance);
+    		defaultGoal.setCurrentBalance(defaultGoal.getCurrentBalance().add(currentBalance));
     		this.savingsGoalService.updateSavingsGoal(defaultGoal);
     	}
     	

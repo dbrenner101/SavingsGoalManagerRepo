@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
 
@@ -93,19 +95,19 @@ public class SavingsGoalsBusinessService {
 	 * @param savingGoalIds List of goal unique identifiers.
 	 * @param amountsToAllocate The amounts to allocate towards each goal.
 	 */
-    protected void allocateDepositToGoals(Long depositId, List<Integer> savingGoalIds, List<Float> amountsToAllocate) {
+    protected void allocateDepositToGoals(Long depositId, List<Integer> savingGoalIds, List<BigDecimal> amountsToAllocate) {
     	
     	Deposit deposit = this.depositRepo.findById(depositId).get();
-    	Float depositAmount = deposit.getAmount();
-    	Float remainingDeposit = depositAmount;
+    	BigDecimal depositAmount = deposit.getAmount();
+    	BigDecimal remainingDeposit = depositAmount;
     	
     	for (int i=0; i<savingGoalIds.size(); i++) {
     		Integer goalId = savingGoalIds.get(i);
     		SavingsGoal goal = this.savingsGoalRepo.findById(goalId).get();
-    		Float allocation = amountsToAllocate.get(i);
-    		goal.setCurrentBalance(goal.getCurrentBalance() == null ? allocation : goal.getCurrentBalance() + allocation);
+    		BigDecimal allocation = amountsToAllocate.get(i);
+    		goal.setCurrentBalance(goal.getCurrentBalance() == null ? allocation : goal.getCurrentBalance().add(allocation));
     		updateSavingsGoal(goal);
-    		remainingDeposit -= allocation;
+    		remainingDeposit = remainingDeposit.subtract(allocation);
     	}
     	
     	log.debug("Remaining deposit: " + remainingDeposit);
@@ -127,16 +129,16 @@ public class SavingsGoalsBusinessService {
 		
 		Long depositId = amountsToAllocate.get(0).getDepositId();
 		Deposit deposit = this.depositRepo.findById(depositId).get();
-		Float depositAmount = deposit.getAmount();
-		Float remainingDeposit = depositAmount;
+		BigDecimal depositAmount = deposit.getAmount();
+		BigDecimal remainingDeposit = depositAmount;
 		
 		for (SavingsGoalDepositAllocation allocation : amountsToAllocate) {
 			Integer goalId = allocation.getSavingsGoalId();
 			SavingsGoal goal = this.savingsGoalRepo.findById(goalId).get();
-			Float amount = allocation.getAllocationAmount();
-			goal.setCurrentBalance(goal.getCurrentBalance() == null ? amount : goal.getCurrentBalance() + amount);
+			BigDecimal amount = allocation.getAllocationAmount();
+			goal.setCurrentBalance(goal.getCurrentBalance() == null ? amount : goal.getCurrentBalance().add(amount));
 			updateSavingsGoal(goal);
-			remainingDeposit -= amount;
+			remainingDeposit = remainingDeposit.subtract(amount);
 		}
 		
 		log.debug("Remaining deposit: " + remainingDeposit);
@@ -152,9 +154,9 @@ public class SavingsGoalsBusinessService {
 	 *
 	 * @param balanceChange Balance to assign to the default goal.
 	 */
-	private void updateDefaultGoalBalance(Float balanceChange) {
+	private void updateDefaultGoalBalance(BigDecimal balanceChange) {
 		SavingsGoal defaultGoal = this.savingsGoalRepo.findByIsDefault(true).get();
-		defaultGoal.setCurrentBalance(defaultGoal.getCurrentBalance() == null ? balanceChange : defaultGoal.getCurrentBalance() + balanceChange);
+		defaultGoal.setCurrentBalance(defaultGoal.getCurrentBalance() == null ? balanceChange : defaultGoal.getCurrentBalance().add(balanceChange));
 		updateSavingsGoal(defaultGoal);
 	}
 	
@@ -194,22 +196,23 @@ public class SavingsGoalsBusinessService {
 	        DateTime startDate = new DateTime(goal.getSavingsStartDate().getTime());
 	        DateTime endDate = new DateTime(goal.getSavingsEndDate().getTime());
 	        
-	        Float targetAmount = goal.getTargetAmount();
+	        BigDecimal targetAmount = goal.getTargetAmount();
 	        
-	        if (goal.getCurrentBalance() >= targetAmount) {
-	        	goal.setSavingsPerDay(null);
-	        	goal.setSavingsPerMonth(null);
-	        	goal.setSavingsPerWeek(null);
+	        if (goal.getCurrentBalance().compareTo(targetAmount) >= 0) {
+	        	goal.setSavingsPerDay(BigDecimal.valueOf(0));
+	        	goal.setSavingsPerMonth(BigDecimal.valueOf(0));
+	        	goal.setSavingsPerWeek(BigDecimal.valueOf(0));
 	        }
 	        else {
-		        Float initialBalance = goal.getInitialBalance() != null ? goal.getInitialBalance() : 0;
-		        Float targetBalance = targetAmount - initialBalance;
+				BigDecimal initialBalance = goal.getInitialBalance() != null ? goal.getInitialBalance() : BigDecimal.valueOf(0);
+				BigDecimal targetBalance = targetAmount.subtract(initialBalance);
 		        
 		        Months months = Months.monthsBetween(startDate, endDate);
 		        log.debug("months between: {}", months.getMonths());
 		        goal.setMonthsTillPayment(months.getMonths());
 		        if (months.getMonths() > 0) {
-		        	Float savingsPerMonth = targetBalance > 0 ? targetBalance / months.getMonths() : 0;
+					BigDecimal savingsPerMonth = targetBalance.floatValue() > 0 ?
+							targetBalance.divide(BigDecimal.valueOf(months.getMonths()), 2, RoundingMode.HALF_UP) : BigDecimal.valueOf(0);
 		        	log.debug("savingsPerMonth: {}", savingsPerMonth);;
 		        	goal.setSavingsPerMonth(savingsPerMonth);
 		        }
@@ -217,14 +220,16 @@ public class SavingsGoalsBusinessService {
 		        Weeks weeks = Weeks.weeksBetween(startDate, endDate);
 		        log.debug("Weeks between: {}", weeks.getWeeks());
 		        goal.setWeeksTillPayment(weeks.getWeeks());
-		        Float savingsPerWeek = targetBalance > 0 ? targetBalance / weeks.getWeeks() : 0;
+				BigDecimal savingsPerWeek = targetBalance.floatValue() > 0 ?
+						targetBalance.divide(BigDecimal.valueOf(weeks.getWeeks()), 2, RoundingMode.HALF_UP) : BigDecimal.valueOf(0);
 		        log.debug("savingsPerWeek: {}", savingsPerWeek);
 		        goal.setSavingsPerWeek(savingsPerWeek);
 		        
 		        Days days = Days.daysBetween(startDate, endDate);
 		        log.debug("days between: {}", days.getDays());
 		        goal.setDaysTillPayment(days.getDays());
-		        Float savingsPerDay = targetBalance > 0 ? targetBalance / days.getDays() : 0;
+				BigDecimal savingsPerDay = targetBalance.floatValue() > 0 ?
+						targetBalance.divide(BigDecimal.valueOf(days.getDays()), 2, RoundingMode.HALF_UP) : BigDecimal.valueOf(0);
 		        log.debug("savingsPerDay: {}", savingsPerDay);
 		        goal.setSavingsPerDay(savingsPerDay);
 	        }

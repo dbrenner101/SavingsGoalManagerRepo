@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -33,11 +34,15 @@ public class SavingsGoalsApiTests {
     @Autowired
     ObjectMapper mapper;
     
-    SavingsGoal sg1 = new SavingsGoal(1, "Goal 1", new Date(), new Date(), 100F, 50F, 25F, false);
-    SavingsGoal sg2 = new SavingsGoal(2, "Goal 2", new Date(), new Date(), 100F, 50F, 25F, false);
-    SavingsGoal sg3 = new SavingsGoal(3, "Goal 3", new Date(), new Date(), 100F, 50F, 25F, false);
+    SavingsGoal sg1 = new SavingsGoal(1, "Goal 1", new Date(), new Date(),
+            BigDecimal.valueOf(100), BigDecimal.valueOf(50), BigDecimal.valueOf(25), false);
+    SavingsGoal sg2 = new SavingsGoal(2, "Goal 2", new Date(), new Date(),
+            BigDecimal.valueOf(100), BigDecimal.valueOf(50), BigDecimal.valueOf(25), false);
+    SavingsGoal sg3 = new SavingsGoal(3, "Goal 3", new Date(), new Date(),
+            BigDecimal.valueOf(100), BigDecimal.valueOf(50), BigDecimal.valueOf(25), false);
     
-    SavingsGoal defaultGoal = new SavingsGoal(3, "Default Goal", new Date(), new Date(), 100F, 50F, 25F, true);
+    SavingsGoal defaultGoal = new SavingsGoal(3, "Default Goal", new Date(), new Date(),
+            BigDecimal.valueOf(100), BigDecimal.valueOf(50), BigDecimal.valueOf(25), true);
     
     @Test
     public void testGetAllSavingsGoals_Success() throws Exception {

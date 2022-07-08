@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,7 +61,7 @@ public class SavingsGoalsApi {
 	@PostMapping(path="/savingsgoals")
 	public SavingsGoal addSavingsGoal(@RequestBody SavingsGoal savingsGoal) {
 		if (savingsGoal.getCurrentBalance() == null) {
-			savingsGoal.setCurrentBalance(0F);
+			savingsGoal.setCurrentBalance(BigDecimal.valueOf(0));
 		}
 		SavingsGoal newGoal = this.service.addSavingsGoal(savingsGoal);
 		return newGoal;

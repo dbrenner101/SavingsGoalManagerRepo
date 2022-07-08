@@ -3,18 +3,8 @@
  */
 package com.brenner.budgetmanager.savingsgoals;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-
+import com.brenner.budgetmanager.deposit.Deposit;
+import com.brenner.budgetmanager.deposit.DepositRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +14,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
-import com.brenner.budgetmanager.deposit.Deposit;
-import com.brenner.budgetmanager.deposit.DepositRepository;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  *
@@ -48,16 +43,16 @@ public class SavingsGoalsControllerTests {
 	
 	private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("MM/dd/yyyy");
 	
-	SavingsGoal sg1 = new SavingsGoal(1, "Goal One", convertStringToDate("1/1/2021"), convertStringToDate("1/31/2021"), 
-			100F, 0F, 10F, false);
-	SavingsGoal sg2 = new SavingsGoal(2, "Goal Two", convertStringToDate("9/1/2022"), convertStringToDate("9/1/2023"), 
-			500F, 0F, 0F, false);
-	SavingsGoal sg3 = new SavingsGoal(3, "Goal Three", convertStringToDate("5/1/2022"), convertStringToDate("6/30/2022"), 
-			150F, 100F, 100F, true);
+	SavingsGoal sg1 = new SavingsGoal(1, "Goal One", convertStringToDate("1/1/2021"), convertStringToDate("1/31/2021"),
+			BigDecimal.valueOf(100), BigDecimal.valueOf(0), BigDecimal.valueOf(10), false);
+	SavingsGoal sg2 = new SavingsGoal(2, "Goal Two", convertStringToDate("9/1/2022"), convertStringToDate("9/1/2023"),
+			BigDecimal.valueOf(500), BigDecimal.valueOf(0), BigDecimal.valueOf(0), false);
+	SavingsGoal sg3 = new SavingsGoal(3, "Goal Three", convertStringToDate("5/1/2022"), convertStringToDate("6/30/2022"),
+			BigDecimal.valueOf(150), BigDecimal.valueOf(100), BigDecimal.valueOf(100), true);
 	
-	Deposit d1 = new Deposit(1L, 100.5F, new Date(), false);
-	Deposit d2 = new Deposit(2L, 50F, new Date(), false);
-	Deposit d3 = new Deposit(3L, 5500.75F, new Date(), true);
+	Deposit d1 = new Deposit(1L, BigDecimal.valueOf(100.5), new Date(), false);
+	Deposit d2 = new Deposit(2L, BigDecimal.valueOf(50), new Date(), false);
+	Deposit d3 = new Deposit(3L, BigDecimal.valueOf(5500.75), new Date(), true);
 	
 	
 	@Test
@@ -98,6 +93,7 @@ public class SavingsGoalsControllerTests {
 				.param("savingsGoalId", "2")
 				.param("amountTowardsGoal", "10.5")
 				.param("amountTowardsGoal", "100"))
+				.andDo(MockMvcResultHandlers.print())
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:getUnallocatedDeposits"));
 			

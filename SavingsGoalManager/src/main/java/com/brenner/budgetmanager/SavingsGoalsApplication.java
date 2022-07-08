@@ -6,16 +6,16 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 @SpringBootApplication
-public class BudgetManager2Application extends SpringBootServletInitializer {
+public class SavingsGoalsApplication extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
-		SpringApplication.run(BudgetManager2Application.class, args);
+		SpringApplication.run(SavingsGoalsApplication.class, args);
 	}
 	
 	protected SpringApplicationBuilder
     configure(SpringApplicationBuilder application)
     {
-        return application.sources(BudgetManager2Application.class);
+        return application.sources(SavingsGoalsApplication.class);
     }
 
 }

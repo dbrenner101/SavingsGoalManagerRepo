@@ -3,14 +3,10 @@
  */
 package com.brenner.budgetmanager.transactions;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
+import com.brenner.budgetmanager.exception.InvalidRequestException;
+import com.brenner.budgetmanager.savingsgoals.SavingsGoal;
+import com.brenner.budgetmanager.savingsgoals.SavingsGoalRepository;
+import com.brenner.budgetmanager.savingsgoals.SavingsGoalsBusinessService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.BeanUtils;
@@ -18,10 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import com.brenner.budgetmanager.exception.InvalidRequestException;
-import com.brenner.budgetmanager.savingsgoals.SavingsGoal;
-import com.brenner.budgetmanager.savingsgoals.SavingsGoalRepository;
-import com.brenner.budgetmanager.savingsgoals.SavingsGoalsBusinessService;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -43,14 +41,14 @@ public class TransactionBusinessServiceTests {
 	@Autowired
 	TransactionBusinessService service;
 	
-	SavingsGoal sg1 = new SavingsGoal(1, "Goal One", convertStringToDate("1/1/2021"), convertStringToDate("1/31/2021"), 
-			100F, 0F, 10F, false);
-	SavingsGoal sg2 = new SavingsGoal(2, "Goal Two", convertStringToDate("9/1/2022"), convertStringToDate("9/1/2023"), 
-			500F, 0F, 0F, false);
+	SavingsGoal sg1 = new SavingsGoal(1, "Goal One", convertStringToDate("1/1/2021"), convertStringToDate("1/31/2021"),
+			BigDecimal.valueOf(100), BigDecimal.valueOf(0), BigDecimal.valueOf(10), false);
+	SavingsGoal sg2 = new SavingsGoal(2, "Goal Two", convertStringToDate("9/1/2022"), convertStringToDate("9/1/2023"),
+			BigDecimal.valueOf(500), BigDecimal.valueOf(0), BigDecimal.valueOf(0), false);
 	
-	Transaction t1 = new Transaction(1L, convertStringToDate("01/05/2020"), sg1, sg2, 100F);
-	Transaction t2 = new Transaction(2L, convertStringToDate("09/01/2021"), sg2, sg1, 1F);
-	Transaction t3 = new Transaction(3L, convertStringToDate("04/21/2022"), sg1, sg2, 99F);
+	Transaction t1 = new Transaction(1L, convertStringToDate("01/05/2020"), sg1, sg2, BigDecimal.valueOf(100));
+	Transaction t2 = new Transaction(2L, convertStringToDate("09/01/2021"), sg2, sg1, BigDecimal.valueOf(1));
+	Transaction t3 = new Transaction(3L, convertStringToDate("04/21/2022"), sg1, sg2, BigDecimal.valueOf(99));
 	
 	private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("MM/dd/yyyy");
 	
@@ -79,8 +77,8 @@ public class TransactionBusinessServiceTests {
 		assertNotNull(t);
 		assertNotNull(fromGoal.getDaysTillPayment());
 		
-		assertEquals(sg1.getCurrentBalance() - t1.getAmount(), fromGoal.getCurrentBalance());
-		assertEquals(sg2.getCurrentBalance() + t1.getAmount(), toGoal.getCurrentBalance());
+		assertEquals(sg1.getCurrentBalance().subtract(t1.getAmount()), fromGoal.getCurrentBalance());
+		assertEquals(sg2.getCurrentBalance().add(t1.getAmount()), toGoal.getCurrentBalance());
 		
 	}
 	
@@ -105,7 +103,7 @@ public class TransactionBusinessServiceTests {
 		assertNotNull(t);
 		assertNotNull(fromGoal.getDaysTillPayment());
 		
-		assertEquals(sg1.getCurrentBalance() - t1.getAmount(), fromGoal.getCurrentBalance());
+		assertEquals(sg1.getCurrentBalance().subtract(t1.getAmount()), fromGoal.getCurrentBalance());
 		
 	}
 	
@@ -126,7 +124,7 @@ public class TransactionBusinessServiceTests {
 		
 		assertEquals("Transaction must have non-null properties (amount, from goal).", e.getMessage());
 		
-		t.setAmount(100F);
+		t.setAmount(BigDecimal.valueOf(100));
 		
 		e = assertThrows(InvalidRequestException.class, () -> {
 			this.service.saveTransaction(t);
@@ -167,8 +165,8 @@ public class TransactionBusinessServiceTests {
 		
 		this.service.deleteTransaction(testTransaction);
 		
-		assertEquals(sg1.getCurrentBalance() + t1.getAmount(), fromGoal.getCurrentBalance());
-		assertEquals(sg2.getCurrentBalance() - t1.getAmount(), toGoal.getCurrentBalance());
+		assertEquals(sg1.getCurrentBalance().add(t1.getAmount()), fromGoal.getCurrentBalance());
+		assertEquals(sg2.getCurrentBalance().subtract(t1.getAmount()), toGoal.getCurrentBalance());
 		
 	}
 	
@@ -189,7 +187,7 @@ public class TransactionBusinessServiceTests {
 		
 		this.service.deleteTransaction(testTransaction);
 		
-		assertEquals(sg1.getCurrentBalance() + t1.getAmount(), fromGoal.getCurrentBalance());
+		assertEquals(sg1.getCurrentBalance().add(t1.getAmount()), fromGoal.getCurrentBalance());
 		
 	}
 	
@@ -210,7 +208,7 @@ public class TransactionBusinessServiceTests {
 		
 		assertEquals("Transaction must have non-null properties (amount, from goal).", e.getMessage());
 		
-		t.setAmount(100F);
+		t.setAmount(BigDecimal.valueOf(100));
 		
 		e = assertThrows(InvalidRequestException.class, () -> {
 			this.service.deleteTransaction(t);
