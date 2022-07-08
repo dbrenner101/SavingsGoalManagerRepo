@@ -123,9 +123,9 @@ public class SavingsGoalBusinessServiceTests {
 		assertNull(goal.getMonthsTillPayment());
 		assertNull(goal.getWeeksTillPayment());
 		assertNull(goal.getDaysTillPayment());
-		assertEquals(0, goal.getSavingsPerMonth());
-		assertEquals(0, goal.getSavingsPerWeek());
-		assertEquals(0, goal.getSavingsPerDay());
+		assertEquals(BigDecimal.valueOf(0), goal.getSavingsPerMonth());
+		assertEquals(BigDecimal.valueOf(0), goal.getSavingsPerWeek());
+		assertEquals(BigDecimal.valueOf(0), goal.getSavingsPerDay());
 	}
 	
 	@Test
