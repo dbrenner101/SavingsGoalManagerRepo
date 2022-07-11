@@ -27,7 +27,11 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author dbrenner
  * 
  */
-@SpringBootTest
+@SpringBootTest(classes = {
+		SavingsGoalsBusinessService.class,
+		SavingsGoalRepository.class,
+		DepositRepository.class
+})
 public class SavingsGoalBusinessServiceTests {
 
 	@MockBean

@@ -23,7 +23,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author dbrenner
  * 
  */
-@SpringBootTest
+@SpringBootTest(classes = {
+		DepositController.class,
+		DepositBusinessService.class
+})
 @AutoConfigureMockMvc
 public class DepositControllerTests {
 

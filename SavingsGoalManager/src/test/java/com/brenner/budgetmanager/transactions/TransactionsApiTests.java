@@ -1,6 +1,7 @@
 package com.brenner.budgetmanager.transactions;
 
 import com.brenner.budgetmanager.savingsgoals.SavingsGoal;
+import com.brenner.budgetmanager.savingsgoals.SavingsGoalRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -11,6 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -22,8 +24,14 @@ import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(classes = {
+        TransactionBusinessService.class,
+        TransactionsApi.class,
+        SavingsGoalRepository.class,
+        ObjectMapper.class
+})
 @AutoConfigureMockMvc
+@EnableWebMvc
 public class TransactionsApiTests {
     
     @Autowired

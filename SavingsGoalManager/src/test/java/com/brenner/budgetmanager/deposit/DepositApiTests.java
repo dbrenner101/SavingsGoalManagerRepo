@@ -10,6 +10,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -21,8 +23,13 @@ import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(classes = {
+        DepositBusinessService.class,
+        DepositApi.class,
+        ObjectMapper.class
+})
 @AutoConfigureMockMvc
+@EnableWebMvc
 public class DepositApiTests {
     @Autowired
     MockMvc mockMvc;
@@ -80,8 +87,10 @@ public class DepositApiTests {
         
         this.mockMvc.perform(MockMvcRequestBuilders
                     .post("/api/deposits")
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(objectMapper.writeValueAsString(d2))
-                    .contentType(MediaType.APPLICATION_JSON))
+                    .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", notNullValue()))
                 .andExpect(jsonPath("$.depositId", is(d2.getDepositId().intValue())));

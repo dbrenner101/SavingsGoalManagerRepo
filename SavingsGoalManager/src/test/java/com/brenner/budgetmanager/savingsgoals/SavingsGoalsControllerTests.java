@@ -4,6 +4,7 @@
 package com.brenner.budgetmanager.savingsgoals;
 
 import com.brenner.budgetmanager.deposit.Deposit;
+import com.brenner.budgetmanager.deposit.DepositBusinessService;
 import com.brenner.budgetmanager.deposit.DepositRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -28,7 +29,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author dbrenner
  * 
  */
-@SpringBootTest
+@SpringBootTest(classes = {
+		SavingsGoalsBusinessService.class,
+		SavingsGoalsController.class,
+		SavingsGoalRepository.class,
+		DepositRepository.class,
+		DepositBusinessService.class
+})
 @AutoConfigureMockMvc
 public class SavingsGoalsControllerTests {
 

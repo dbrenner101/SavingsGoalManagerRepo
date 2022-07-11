@@ -3,7 +3,10 @@
  */
 package com.brenner.budgetmanager.transactions;
 
+import com.brenner.budgetmanager.deposit.DepositRepository;
 import com.brenner.budgetmanager.savingsgoals.SavingsGoal;
+import com.brenner.budgetmanager.savingsgoals.SavingsGoalRepository;
+import com.brenner.budgetmanager.savingsgoals.SavingsGoalsBusinessService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -28,7 +31,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author dbrenner
  * 
  */
-@SpringBootTest
+@SpringBootTest(classes = {
+		TransactionBusinessService.class,
+		TransactionController.class,
+		SavingsGoalsBusinessService.class,
+		SavingsGoalRepository.class,
+		DepositRepository.class,
+		ObjectMapper.class
+})
 @AutoConfigureMockMvc
 public class TransactionControllerTests {
 	
@@ -40,6 +50,9 @@ public class TransactionControllerTests {
 	
 	@MockBean
 	TransactionBusinessService service;
+	
+	@MockBean
+	SavingsGoalsBusinessService savingsGoalsBusinessService;
 	
 	SavingsGoal sg1 = new SavingsGoal(1, "Goal 1", new Date(), new Date(),
 			BigDecimal.valueOf(100), BigDecimal.valueOf(50), BigDecimal.valueOf(25), false);

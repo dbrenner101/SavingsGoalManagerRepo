@@ -10,6 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -21,8 +22,13 @@ import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest (classes = {
+        SavingsGoalsBusinessService.class,
+        SavingsGoalsApi.class,
+        ObjectMapper.class
+})
 @AutoConfigureMockMvc
+@EnableWebMvc
 public class SavingsGoalsApiTests {
     
     @Autowired

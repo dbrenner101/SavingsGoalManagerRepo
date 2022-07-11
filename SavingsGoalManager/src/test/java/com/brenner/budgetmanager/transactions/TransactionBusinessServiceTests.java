@@ -3,6 +3,7 @@
  */
 package com.brenner.budgetmanager.transactions;
 
+import com.brenner.budgetmanager.deposit.DepositRepository;
 import com.brenner.budgetmanager.exception.InvalidRequestException;
 import com.brenner.budgetmanager.savingsgoals.SavingsGoal;
 import com.brenner.budgetmanager.savingsgoals.SavingsGoalRepository;
@@ -26,11 +27,20 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author dbrenner
  * 
  */
-@SpringBootTest
+@SpringBootTest(classes = {
+		TransactionRepository.class,
+		SavingsGoalRepository.class,
+		SavingsGoalsBusinessService.class,
+		TransactionBusinessService.class,
+		DepositRepository.class
+})
 public class TransactionBusinessServiceTests {
 
 	@MockBean
 	TransactionRepository repo;
+	
+	@MockBean
+	DepositRepository depositRepository;
 
 	@MockBean
     SavingsGoalRepository savingsGoalRepo;
