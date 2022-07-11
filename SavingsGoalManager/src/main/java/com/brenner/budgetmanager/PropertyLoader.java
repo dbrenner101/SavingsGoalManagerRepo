@@ -8,7 +8,8 @@ import org.springframework.context.annotation.PropertySource;
  * Load properties from an external file
  */
 @Configuration
-@PropertySource("file:${HOME}/dev/secrets/secrets.properties")
+@PropertySource(value = "file:/home/dbrenner/dev/secrets/secrets.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "file:/Users/dbrenner/dev/secrets/secrets.properties", ignoreResourceNotFound = true)
 public class PropertyLoader {
     
     @Value("${budgetmanager.datasource.password}")
