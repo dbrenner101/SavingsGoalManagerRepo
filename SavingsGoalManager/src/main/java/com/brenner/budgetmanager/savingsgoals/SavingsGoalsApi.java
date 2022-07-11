@@ -73,7 +73,7 @@ public class SavingsGoalsApi {
 	 * @param savingsGoalDepositAllocations The list of allocations
 	 */
 	@PutMapping(path="/savingsgoals/allocateDeposit")
-	public void allocateDepositToGoals(@RequestBody List<SavingsGoalDepositAllocation> savingsGoalDepositAllocations) {
+	public void allocateDepositToGoals(@RequestBody SavingsGoalDepositAllocation savingsGoalDepositAllocations) {
 		this.service.allocateDepositToGoals(savingsGoalDepositAllocations);
 	}
 	

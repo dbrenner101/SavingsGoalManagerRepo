@@ -123,16 +123,20 @@ public class SavingsGoalsBusinessService {
 	 *
 	 * 	 This method will retrieve each goal and update its current balance based on the allocated amount. After updates
 	 * 	 are complete the deposit will be marked as allocated.
-	 * @param amountsToAllocate The list of goal ids and allocation amounts.
+	 * @param savingsGoalDepositAllocation The list of goal ids and allocation amounts.
 	 */
-	protected void allocateDepositToGoals(List<SavingsGoalDepositAllocation> amountsToAllocate) {
+	protected void allocateDepositToGoals(SavingsGoalDepositAllocation savingsGoalDepositAllocation) {
 		
-		Long depositId = amountsToAllocate.get(0).getDepositId();
-		Deposit deposit = this.depositRepo.findById(depositId).get();
-		BigDecimal depositAmount = deposit.getAmount();
+		List<Deposit> depositsInAllocation = savingsGoalDepositAllocation.getDeposits();
+		List<SavingsGoalAllocation> allocations = savingsGoalDepositAllocation.getSavingsGoalAllocations();
+		
+		BigDecimal depositAmount = depositsInAllocation.stream()
+				.filter(i -> i.getAmount() != null)
+				.map(t -> t.getAmount())
+				.reduce(BigDecimal.ZERO, BigDecimal::add);
 		BigDecimal remainingDeposit = depositAmount;
 		
-		for (SavingsGoalDepositAllocation allocation : amountsToAllocate) {
+		for (SavingsGoalAllocation allocation : savingsGoalDepositAllocation.getSavingsGoalAllocations()) {
 			Integer goalId = allocation.getSavingsGoalId();
 			SavingsGoal goal = this.savingsGoalRepo.findById(goalId).get();
 			BigDecimal amount = allocation.getAllocationAmount();
@@ -145,8 +149,8 @@ public class SavingsGoalsBusinessService {
 		
 		updateDefaultGoalBalance(remainingDeposit);
 		
-		deposit.setAllocated(true);
-		this.depositRepo.save(deposit);
+		depositsInAllocation.forEach(d -> d.setAllocated(true));
+		this.depositRepo.saveAll(depositsInAllocation);
 	}
 	
 	/**

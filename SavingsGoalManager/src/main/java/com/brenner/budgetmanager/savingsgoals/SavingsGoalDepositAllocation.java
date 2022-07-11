@@ -1,42 +1,37 @@
 package com.brenner.budgetmanager.savingsgoals;
 
-import java.math.BigDecimal;
+import com.brenner.budgetmanager.deposit.Deposit;
+
+import java.util.List;
 
 /**
  * A special data transfer object that encapsulates the allocation of a part of a deposit to a specific goal.
  */
 public class SavingsGoalDepositAllocation {
-    Integer savingsGoalId;
-    Long depositId;
-    BigDecimal allocationAmount;
     
-    public SavingsGoalDepositAllocation(Integer savingsGoalId, Long depositId, BigDecimal allocationAmount) {
-        this.savingsGoalId = savingsGoalId;
-        this.depositId = depositId;
-        this.allocationAmount = allocationAmount;
+    List<Deposit> deposits;
+    List<SavingsGoalAllocation> savingsGoalAllocations;
+    
+    public SavingsGoalDepositAllocation() {}
+    
+    public SavingsGoalDepositAllocation(List<Deposit> deposits, List<SavingsGoalAllocation> savingsGoalAllocations) {
+        this.deposits = deposits;
+        this.savingsGoalAllocations = savingsGoalAllocations;
     }
     
-    public Integer getSavingsGoalId() {
-        return savingsGoalId;
+    public List<Deposit> getDeposits() {
+        return deposits;
     }
     
-    public void setSavingsGoalId(Integer savingsGoalId) {
-        this.savingsGoalId = savingsGoalId;
+    public void setDeposits(List<Deposit> deposits) {
+        this.deposits = deposits;
     }
     
-    public Long getDepositId() {
-        return depositId;
+    public List<SavingsGoalAllocation> getSavingsGoalAllocations() {
+        return savingsGoalAllocations;
     }
     
-    public void setDepositId(Long depositId) {
-        this.depositId = depositId;
-    }
-    
-    public BigDecimal getAllocationAmount() {
-        return allocationAmount;
-    }
-    
-    public void setAllocationAmount(BigDecimal allocationAmount) {
-        this.allocationAmount = allocationAmount;
+    public void setSavingsGoalAllocations(List<SavingsGoalAllocation> savingsGoalAllocations) {
+        this.savingsGoalAllocations = savingsGoalAllocations;
     }
 }
